@@ -1,14 +1,15 @@
 // ============================================================
 // StartScreen.jsx
-// The first screen the player sees. Shows the game title,
-// instructions, high score, and a Start button.
+// Title screen — shows instructions, category legend, high
+// score, a Start button, and a Leaderboard button.
 // ============================================================
 
 import { CATEGORIES } from '../data/drinks'
 
-function StartScreen({ highScore, onStart }) {
+function StartScreen({ highScore, onStart, onLeaderboard }) {
   return (
     <div className="screen start-screen">
+
       {/* ── Title ── */}
       <div className="start-title-wrap">
         <div className="start-emoji-row">🍹 🍸 ☕ 🥤 🍺</div>
@@ -19,7 +20,7 @@ function StartScreen({ highScore, onStart }) {
       {/* ── High score badge ── */}
       {highScore > 0 && (
         <div className="high-score-badge">
-          🏆 Best Score: <strong>{highScore}</strong>
+          🏆 Best Score: <strong>{highScore.toLocaleString()}</strong>
         </div>
       )}
 
@@ -28,10 +29,11 @@ function StartScreen({ highScore, onStart }) {
         <h2>How to Play</h2>
         <ol>
           <li>A drink card will appear on screen.</li>
-          <li>Tap the card to <strong>select</strong> it.</li>
-          <li>Tap the correct <strong>category button</strong> to sort it.</li>
+          <li><strong>Drag</strong> the card to the correct category bucket.</li>
           <li>✅ Correct = points! ❌ Wrong = lose a life (❤️).</li>
-          <li>Every <strong>5 correct answers</strong> you level up — it gets faster!</li>
+          <li>Answer fast — leftover time adds bonus points.</li>
+          <li>Every <strong>5 correct answers</strong> = level up (faster timer).</li>
+          <li>Build a <strong>combo streak</strong> for score multipliers 🔥</li>
         </ol>
       </div>
 
@@ -48,9 +50,13 @@ function StartScreen({ highScore, onStart }) {
         </div>
       </div>
 
-      {/* ── Start button ── */}
+      {/* ── Buttons ── */}
       <button className="btn btn-start" onClick={onStart}>
         🚀 Start Game
+      </button>
+
+      <button className="btn btn-leaderboard-start" onClick={onLeaderboard}>
+        🏆 Leaderboard
       </button>
     </div>
   )

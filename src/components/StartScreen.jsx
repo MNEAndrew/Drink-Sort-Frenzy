@@ -58,6 +58,11 @@ function StartScreen({ highScore, onStart, onLeaderboard }) {
       <button className="btn btn-leaderboard-start" onClick={onLeaderboard}>
         🏆 Leaderboard
       </button>
+
+      {/* Brand disclaimer */}
+      <p className="brand-disclaimer">
+        Brand names belong to their respective owners. Fan-made project — not affiliated with any beverage company.
+      </p>
     </div>
   )
 }

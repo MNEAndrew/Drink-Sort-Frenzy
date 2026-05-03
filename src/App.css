@@ -606,10 +606,16 @@ body {
 }
 
 .drink-card__name {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 6px;
+  /* Wrap long brand names cleanly instead of overflowing */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.25;
+  /* Scale down font for very long names automatically */
+  hyphens: auto;
 }
 
 .drink-card__hint {
@@ -790,6 +796,15 @@ body {
 /* ============================================================
    Leaderboard button on Start Screen
    ============================================================ */
+.brand-disclaimer {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.25);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 320px;
+  padding: 0 8px;
+}
+
 .btn-leaderboard-start {
   background: var(--surface);
   color: var(--accent2);

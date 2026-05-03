@@ -2,12 +2,14 @@
 // drinks.js — Full drink dataset for Drink Sort Frenzy
 //
 // Categories (must match exactly):
-//   "Cocktail" | "Mocktail" | "Coffee/Tea" | "Soda/Juice" | "Beer/Wine"
+//   "Cocktail" | "Coffee/Tea" | "Soda/Juice" | "Beer/Wine" | "Liquor"
 //
 // Brand-name drinks are mapped to the closest category:
 //   Soda / Energy / Water / Juice / Sports → "Soda/Juice"
 //   Brewed coffee / tea / boba            → "Coffee/Tea"
-//   Beer / Wine / Liquor / Hard Seltzer   → "Beer/Wine"
+//   Beer / Wine / Hard Seltzer            → "Beer/Wine"
+//   Spirits / Liqueurs                    → "Liquor"
+//   Mixed drinks (alcoholic + virgin)     → "Cocktail"
 //
 // Disclaimer: Brand names belong to their respective owners.
 // This project is fan-made and not affiliated with any
@@ -16,7 +18,6 @@
 
 export const CATEGORIES = [
   { id: "Cocktail",    label: "Cocktail",    emoji: "🍸", color: "#ff6b9d" },
-  { id: "Mocktail",   label: "Mocktail",    emoji: "🧃", color: "#a78bfa" },
   { id: "Coffee/Tea", label: "Coffee/Tea",  emoji: "☕", color: "#92400e" },
   { id: "Soda/Juice", label: "Soda/Juice",  emoji: "🥤", color: "#34d399" },
   { id: "Beer/Wine",  label: "Beer/Wine",   emoji: "🍷", color: "#f97316" },
@@ -73,40 +74,38 @@ export const DRINKS = [
   { name: "Sidecar",             category: "Cocktail", emoji: "🍸", hint: "Cognac, Cointreau & lemon" },
   { name: "Painkiller",          category: "Cocktail", emoji: "🍹", hint: "Rum, pineapple & coconut" },
 
-  // ╔══════════════════════════════════════════════════════════╗
-  // ║  MOCKTAILS                                               ║
-  // ╚══════════════════════════════════════════════════════════╝
-  { name: "Virgin Mojito",       category: "Mocktail", emoji: "🌿", hint: "Mint, lime & soda water" },
-  { name: "Shirley Temple",      category: "Mocktail", emoji: "🍒", hint: "Ginger ale & grenadine" },
-  { name: "Arnold Palmer",       category: "Mocktail", emoji: "🍋", hint: "Iced tea & lemonade" },
-  { name: "Nojito",              category: "Mocktail", emoji: "🌿", hint: "Mint & sparkling water" },
-  { name: "Sparkling Lemonade",  category: "Mocktail", emoji: "🍋", hint: "Lemon & fizzy water" },
-  { name: "Cucumber Cooler",     category: "Mocktail", emoji: "🥒", hint: "Cucumber, mint & tonic" },
-  { name: "Mango Fizz",          category: "Mocktail", emoji: "🥭", hint: "Mango puree & soda" },
-  { name: "Virgin Pina Colada",  category: "Mocktail", emoji: "🥥", hint: "Coconut & pineapple, no rum" },
-  { name: "Berry Lemonade",      category: "Mocktail", emoji: "🫐", hint: "Mixed berries & lemon" },
-  { name: "Watermelon Slush",    category: "Mocktail", emoji: "🍉", hint: "Blended watermelon & lime" },
-  { name: "Roy Rogers",          category: "Mocktail", emoji: "🍒", hint: "Cola & grenadine" },
-  { name: "Virgin Margarita",    category: "Mocktail", emoji: "🍋", hint: "Lime, salt, no tequila" },
-  { name: "Cranberry Spritzer",  category: "Mocktail", emoji: "🫐", hint: "Cranberry & sparkling water" },
-  { name: "Ginger Beer Mocktail",category: "Mocktail", emoji: "🫚", hint: "Ginger beer & fresh lime" },
+  // ── Virgin / Mocktail-style (still sorted as Cocktail) ───
+  { name: "Virgin Mojito",       category: "Cocktail", emoji: "🌿", hint: "Mint, lime & soda water" },
+  { name: "Shirley Temple",      category: "Cocktail", emoji: "🍒", hint: "Ginger ale & grenadine" },
+  { name: "Arnold Palmer",       category: "Cocktail", emoji: "🍋", hint: "Iced tea & lemonade" },
+  { name: "Nojito",              category: "Cocktail", emoji: "🌿", hint: "Mint & sparkling water" },
+  { name: "Sparkling Lemonade",  category: "Cocktail", emoji: "🍋", hint: "Lemon & fizzy water" },
+  { name: "Cucumber Cooler",     category: "Cocktail", emoji: "🥒", hint: "Cucumber, mint & tonic" },
+  { name: "Mango Fizz",          category: "Cocktail", emoji: "🥭", hint: "Mango puree & soda" },
+  { name: "Virgin Pina Colada",  category: "Cocktail", emoji: "🥥", hint: "Coconut & pineapple, no rum" },
+  { name: "Berry Lemonade",      category: "Cocktail", emoji: "🫐", hint: "Mixed berries & lemon" },
+  { name: "Watermelon Slush",    category: "Cocktail", emoji: "🍉", hint: "Blended watermelon & lime" },
+  { name: "Roy Rogers",          category: "Cocktail", emoji: "🍒", hint: "Cola & grenadine" },
+  { name: "Virgin Margarita",    category: "Cocktail", emoji: "🍋", hint: "Lime, salt, no tequila" },
+  { name: "Cranberry Spritzer",  category: "Cocktail", emoji: "🫐", hint: "Cranberry & sparkling water" },
+  { name: "Ginger Beer Mocktail",category: "Cocktail", emoji: "🫚", hint: "Ginger beer & fresh lime" },
   { name: "Sparkling Apple Cider",category:"Mocktail", emoji: "🍏", hint: "Fizzy pressed apple" },
   { name: "Watermelon Agua Fresca",category:"Mocktail",emoji: "🍉", hint: "Fresh watermelon water" },
-  { name: "Hibiscus Iced Tea",   category: "Mocktail", emoji: "🌺", hint: "Tangy hibiscus flower tea" },
-  { name: "Mango Lassi",         category: "Mocktail", emoji: "🥭", hint: "Mango & yogurt smoothie" },
-  { name: "Thai Iced Tea",       category: "Mocktail", emoji: "🧡", hint: "Spiced tea & condensed milk" },
-  { name: "Matcha Lemonade",     category: "Mocktail", emoji: "🍵", hint: "Green tea & fresh lemon" },
-  { name: "Peach Iced Tea",      category: "Mocktail", emoji: "🍑", hint: "Brewed tea & peach nectar" },
-  { name: "Strawberry Lemonade", category: "Mocktail", emoji: "🍓", hint: "Fresh strawberries & lemon" },
-  { name: "Blueberry Lemonade",  category: "Mocktail", emoji: "🫐", hint: "Blueberry syrup & lemon" },
-  { name: "Raspberry Limeade",   category: "Mocktail", emoji: "🍋", hint: "Raspberry & fresh lime" },
-  { name: "Pomegranate Spritzer",category: "Mocktail", emoji: "❤️",  hint: "Pomegranate & soda" },
-  { name: "Lavender Lemonade",   category: "Mocktail", emoji: "💜", hint: "Lavender syrup & lemon" },
-  { name: "Honey Citrus Tea",    category: "Mocktail", emoji: "🍯", hint: "Honey, lemon & green tea" },
-  { name: "Lychee Lemonade",     category: "Mocktail", emoji: "🍈", hint: "Lychee juice & lemon" },
-  { name: "Passionfruit Spritz", category: "Mocktail", emoji: "🍋", hint: "Passionfruit & soda water" },
-  { name: "Cucumber Mint Cooler",category: "Mocktail", emoji: "🥒", hint: "Cucumber, mint & tonic" },
-  { name: "Coconut Lime Cooler", category: "Mocktail", emoji: "🥥", hint: "Coconut water & lime" },
+  { name: "Hibiscus Iced Tea",   category: "Cocktail", emoji: "🌺", hint: "Tangy hibiscus flower tea" },
+  { name: "Mango Lassi",         category: "Cocktail", emoji: "🥭", hint: "Mango & yogurt smoothie" },
+  { name: "Thai Iced Tea",       category: "Cocktail", emoji: "🧡", hint: "Spiced tea & condensed milk" },
+  { name: "Matcha Lemonade",     category: "Cocktail", emoji: "🍵", hint: "Green tea & fresh lemon" },
+  { name: "Peach Iced Tea",      category: "Cocktail", emoji: "🍑", hint: "Brewed tea & peach nectar" },
+  { name: "Strawberry Lemonade", category: "Cocktail", emoji: "🍓", hint: "Fresh strawberries & lemon" },
+  { name: "Blueberry Lemonade",  category: "Cocktail", emoji: "🫐", hint: "Blueberry syrup & lemon" },
+  { name: "Raspberry Limeade",   category: "Cocktail", emoji: "🍋", hint: "Raspberry & fresh lime" },
+  { name: "Pomegranate Spritzer",category: "Cocktail", emoji: "❤️",  hint: "Pomegranate & soda" },
+  { name: "Lavender Lemonade",   category: "Cocktail", emoji: "💜", hint: "Lavender syrup & lemon" },
+  { name: "Honey Citrus Tea",    category: "Cocktail", emoji: "🍯", hint: "Honey, lemon & green tea" },
+  { name: "Lychee Lemonade",     category: "Cocktail", emoji: "🍈", hint: "Lychee juice & lemon" },
+  { name: "Passionfruit Spritz", category: "Cocktail", emoji: "🍋", hint: "Passionfruit & soda water" },
+  { name: "Cucumber Mint Cooler",category: "Cocktail", emoji: "🥒", hint: "Cucumber, mint & tonic" },
+  { name: "Coconut Lime Cooler", category: "Cocktail", emoji: "🥥", hint: "Coconut water & lime" },
   { name: "Pineapple Ginger Fizz",category:"Mocktail", emoji: "🍍", hint: "Pineapple & ginger beer" },
 
   // ╔══════════════════════════════════════════════════════════╗

@@ -1,29 +1,26 @@
 // ============================================================
 // GameScreen.jsx
-// Core gameplay with drag-and-drop sorting into category buckets.
+// Core gameplay with drag-and-drop sorting.
 //
-// ── Scoring formula ────────────────────────────────────────
-//   timePoints  = 40–100  (how fast you answered; faster = more)
-//   levelMult   = 1.0 + (level-1) × 0.1   (every level adds +10%)
-//   comboMult   = 1.0 / 1.25 / 1.5 / 1.75 / 2.0
-//                 (combo tier based on consecutive correct answers)
-//   finalPts    = round(timePoints × levelMult × comboMult)
+// Visual effects fired by this component:
+//   Correct answer   → confetti particle burst
+//   Combo milestone  → bigger burst + full-screen flash + milestone banner
+//   Level up         → large burst + flash + level banner
+//   Wrong / timeout  → screen shake + red flash
 //
-// ── Combo tiers ────────────────────────────────────────────
-//   0–2  correct in a row → ×1.0
-//   3–5                   → ×1.25  🔥
-//   6–9                   → ×1.5   🔥🔥
-//   10–14                 → ×1.75  🔥🔥🔥
-//   15+                   → ×2.0   🔥🔥🔥🔥
-//
-// Combo resets to 0 on any wrong answer or timeout.
+// Combo milestone tiers & messages:
+//   combo 3  → 🔥  "ON FIRE!"        (tier 1)
+//   combo 6  → 🔥🔥 "BLAZING!"       (tier 2)
+//   combo 10 → ⚡   "UNSTOPPABLE!"   (tier 3, + shake)
+//   combo 15+→ 💥   "GODLIKE!"       (tier 4, + shake, repeats every 5)
 // ============================================================
 
 import { useState, useEffect, useRef } from 'react'
 import { DRINKS, CATEGORIES } from '../data/drinks'
 import DrinkCard from './DrinkCard'
+import Particles from './Particles'
 
-// ── Helpers ───────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────
 
 function getRandomDrink(current) {
   let pick
@@ -36,16 +33,21 @@ function timerForLevel(level) {
   return Math.max(5, 15 - (level - 1))
 }
 
-/**
- * Returns the combo multiplier and flame label for a given combo count.
- *   e.g. getComboInfo(7) → { mult: 1.5, flames: '🔥🔥', label: '×1.5' }
- */
 function getComboInfo(combo) {
   if (combo >= 15) return { mult: 2.0,  flames: '🔥🔥🔥🔥', label: '×2.0' }
   if (combo >= 10) return { mult: 1.75, flames: '🔥🔥🔥',   label: '×1.75' }
   if (combo >= 6)  return { mult: 1.5,  flames: '🔥🔥',     label: '×1.5' }
   if (combo >= 3)  return { mult: 1.25, flames: '🔥',       label: '×1.25' }
   return                  { mult: 1.0,  flames: '',          label: '×1.0' }
+}
+
+/** Returns the milestone config if newCombo hits a trigger point, else null. */
+function getMilestoneForCombo(newCombo) {
+  if (newCombo === 3)                          return { text: '🔥 ON FIRE!',       tier: 1, burst: 'combo3'  }
+  if (newCombo === 6)                          return { text: '🔥🔥 BLAZING!',     tier: 2, burst: 'combo6'  }
+  if (newCombo === 10)                         return { text: '⚡ UNSTOPPABLE!',   tier: 3, burst: 'combo10' }
+  if (newCombo >= 15 && newCombo % 5 === 0)    return { text: '💥 GODLIKE!',       tier: 4, burst: 'combo15' }
+  return null
 }
 
 // ── Component ─────────────────────────────────────────────────
@@ -56,25 +58,32 @@ function GameScreen({ onGameOver }) {
   const [score,        setScore]        = useState(0)
   const [lives,        setLives]        = useState(3)
   const [level,        setLevel]        = useState(1)
-  // streak: total correct answers — used to trigger level-ups every 5
-  const [streak,       setStreak]       = useState(0)
-  // combo: consecutive correct answers — resets on wrong/timeout, drives multiplier
-  const [combo,        setCombo]        = useState(0)
+  const [streak,       setStreak]       = useState(0)   // total correct → level-ups
+  const [combo,        setCombo]        = useState(0)   // consecutive correct → multiplier
   const [currentDrink, setCurrentDrink] = useState(() => getRandomDrink(null))
   const [timeLeft,     setTimeLeft]     = useState(() => timerForLevel(1))
   const [maxTime,      setMaxTime]      = useState(() => timerForLevel(1))
   const [feedback,     setFeedback]     = useState(null)
   const [levelUpMsg,   setLevelUpMsg]   = useState(false)
   const [paused,       setPaused]       = useState(false)
-  // pointPop: drives the floating "+N pts" popup after a correct answer
   const [pointPop,     setPointPop]     = useState(null)  // { pts, mult, key }
 
-  // ── Drag state ─────────────────────────────────────────────
-  const [isDragging,   setIsDragging]   = useState(false)
-  const [dragDelta,    setDragDelta]    = useState({ x: 0, y: 0 })
-  const [hoveredCat,   setHoveredCat]   = useState(null)
+  // ── Visual effects state ───────────────────────────────────
+  // Array of active particle bursts — each removed after its animation ends
+  const [bursts,     setBursts]     = useState([])  // [{ id, type }]
+  // Array of active screen flashes — same pattern
+  const [flashes,    setFlashes]    = useState([])  // [{ id, color, opacity }]
+  // Combo milestone banner
+  const [milestone,  setMilestone]  = useState(null) // { text, tier, key }
+  // Screen shake: toggling this key forces the animation to restart
+  const [shakeKey,   setShakeKey]   = useState(0)
 
-  // ── Refs (prevent stale-closure bugs in callbacks / setTimeout) ─
+  // ── Drag state ─────────────────────────────────────────────
+  const [isDragging,  setIsDragging]  = useState(false)
+  const [dragDelta,   setDragDelta]   = useState({ x: 0, y: 0 })
+  const [hoveredCat,  setHoveredCat]  = useState(null)
+
+  // ── Refs (stale-closure guard) ─────────────────────────────
   const livesRef      = useRef(lives)
   const scoreRef      = useRef(score)
   const levelRef      = useRef(level)
@@ -86,8 +95,8 @@ function GameScreen({ onGameOver }) {
   const dragStartRef  = useRef({ x: 0, y: 0 })
   const bucketRefs    = useRef({})
   const cardRef       = useRef(null)
+  const gameScreenRef = useRef(null)
 
-  // Keep all refs in sync with state every render
   livesRef.current    = lives
   scoreRef.current    = score
   levelRef.current    = level
@@ -96,7 +105,7 @@ function GameScreen({ onGameOver }) {
   timeLeftRef.current = timeLeft
   maxTimeRef.current  = maxTime
 
-  // ── Timer countdown ────────────────────────────────────────
+  // ── Timer ──────────────────────────────────────────────────
   useEffect(() => {
     if (paused) return
     if (timeLeft <= 0) { onTimerEnd(); return }
@@ -104,7 +113,47 @@ function GameScreen({ onGameOver }) {
     return () => clearInterval(id)
   }, [timeLeft, paused])
 
-  // ── Advance to next drink ──────────────────────────────────
+  // ── Effect helpers ─────────────────────────────────────────
+
+  /** Spawn a particle burst. Auto-removes after animation finishes. */
+  function addBurst(type) {
+    const id = Date.now() + Math.random()
+    setBursts(prev => [...prev, { id, type }])
+    setTimeout(() => setBursts(prev => prev.filter(b => b.id !== id)), 1500)
+  }
+
+  /**
+   * Flash the entire screen with a coloured overlay.
+   * @param {string} color  – CSS color value
+   * @param {number} alpha  – peak opacity (0–1)
+   */
+  function addFlash(color, alpha = 0.35) {
+    const id = Date.now() + Math.random()
+    setFlashes(prev => [...prev, { id, color, alpha }])
+    setTimeout(() => setFlashes(prev => prev.filter(f => f.id !== id)), 750)
+  }
+
+  /**
+   * Shake the game screen element by briefly adding a CSS animation class.
+   * We force a reflow between class removal and addition so the browser
+   * always restarts the animation even if shaken back-to-back.
+   */
+  function triggerShake() {
+    const el = gameScreenRef.current
+    if (!el) return
+    el.classList.remove('game-screen--shake')
+    void el.offsetWidth          // force reflow
+    el.classList.add('game-screen--shake')
+    setTimeout(() => el.classList.remove('game-screen--shake'), 550)
+  }
+
+  /** Show a combo milestone banner and auto-hide it. */
+  function showMilestone(text, tier) {
+    setMilestone({ text, tier, key: Date.now() })
+    setTimeout(() => setMilestone(null), 1900)
+  }
+
+  // ── Next drink ─────────────────────────────────────────────
   function showNextDrink(newLevel) {
     const lvl = newLevel ?? levelRef.current
     const t   = timerForLevel(lvl)
@@ -123,69 +172,82 @@ function GameScreen({ onGameOver }) {
   function onTimerEnd() {
     setPaused(true)
     setFeedback('wrong')
-    setCombo(0); comboRef.current = 0     // reset combo on timeout
+    setCombo(0); comboRef.current = 0
     const newLives = livesRef.current - 1
     setLives(newLives); livesRef.current = newLives
-    if (newLives <= 0) { setTimeout(() => onGameOver(scoreRef.current), 800); return }
-    setTimeout(() => showNextDrink(), 950)
+
+    // Screen shake + red flash
+    triggerShake()
+    addFlash('#ef4444', 0.3)
+
+    if (newLives <= 0) { setTimeout(() => onGameOver(scoreRef.current), 850); return }
+    setTimeout(() => showNextDrink(), 1000)
   }
 
-  // ── Calculate points for a correct answer ─────────────────
-  function calcPoints() {
-    // Time ratio: 1.0 = answered instantly, 0.0 = last second
-    const timeRatio  = maxTimeRef.current > 0
-      ? timeLeftRef.current / maxTimeRef.current
-      : 0
-    // Base: 40 pts minimum, up to 100 for very fast answers
+  // ── Scoring ────────────────────────────────────────────────
+  function calcPoints(newCombo) {
+    const timeRatio  = maxTimeRef.current > 0 ? timeLeftRef.current / maxTimeRef.current : 0
     const timePoints = Math.round(40 + 60 * timeRatio)
-
-    // Level multiplier: +10% per level above 1
     const levelMult  = 1 + (levelRef.current - 1) * 0.1
-
-    // Combo multiplier based on the NEW combo count (after incrementing)
-    const newCombo   = comboRef.current + 1
     const { mult: comboMult } = getComboInfo(newCombo)
-
-    const pts = Math.round(timePoints * levelMult * comboMult)
-    return { pts, comboMult, newCombo }
+    return { pts: Math.round(timePoints * levelMult * comboMult), comboMult }
   }
 
-  // ── Evaluate dropped answer ────────────────────────────────
+  // ── Answer evaluation ──────────────────────────────────────
   function evaluate(categoryId) {
     if (paused || !categoryId) return
     setPaused(true)
 
     if (currentDrink.category === categoryId) {
-      // ✅ Correct answer
-      const { pts, comboMult, newCombo } = calcPoints()
-      const newScore  = scoreRef.current + pts
+      // ✅ Correct
+      const newCombo  = comboRef.current + 1
       const newStreak = streakRef.current + 1
+      const { pts, comboMult } = calcPoints(newCombo)
+      const newScore  = scoreRef.current + pts
 
-      setScore(newScore);    scoreRef.current  = newScore
-      setStreak(newStreak);  streakRef.current = newStreak
-      setCombo(newCombo);    comboRef.current  = newCombo
+      setScore(newScore);   scoreRef.current  = newScore
+      setStreak(newStreak); streakRef.current = newStreak
+      setCombo(newCombo);   comboRef.current  = newCombo
       setFeedback('correct')
-      // Trigger the floating "+N pts" popup (unique key forces remount/re-animation)
       setPointPop({ pts, comboMult, key: Date.now() })
 
-      // Level-up every 5 correct answers
+      // ── Fire effects ──────────────────────────────────────
+      const ms = getMilestoneForCombo(newCombo)
+      if (ms) {
+        // Combo milestone: big burst + flash + shake (tier 3+) + banner
+        addBurst(ms.burst)
+        showMilestone(ms.text, ms.tier)
+        const flashColors = { 1: '#f97316', 2: '#ef4444', 3: '#a78bfa', 4: '#ffd700' }
+        addFlash(flashColors[ms.tier] ?? '#ffd700', 0.28 + ms.tier * 0.04)
+        if (ms.tier >= 3) triggerShake()
+      } else {
+        // Regular correct answer: small confetti
+        addBurst('correct')
+      }
+
+      // ── Level-up every 5 correct answers ──────────────────
       if (newStreak % 5 === 0) {
         const newLevel = levelRef.current + 1
         setLevel(newLevel); levelRef.current = newLevel
         setLevelUpMsg(true)
-        setTimeout(() => setLevelUpMsg(false), 1600)
-        setTimeout(() => showNextDrink(newLevel), 1050)
+        addBurst('levelup')
+        addFlash('#60a5fa', 0.32)
+        setTimeout(() => setLevelUpMsg(false), 1700)
+        setTimeout(() => showNextDrink(newLevel), 1100)
       } else {
-        setTimeout(() => showNextDrink(), 950)
+        setTimeout(() => showNextDrink(), 1000)
       }
+
     } else {
-      // ❌ Wrong answer — combo resets
+      // ❌ Wrong — reset combo, shake, red flash
       setCombo(0); comboRef.current = 0
       const newLives = livesRef.current - 1
       setLives(newLives); livesRef.current = newLives
       setFeedback('wrong')
-      if (newLives <= 0) { setTimeout(() => onGameOver(scoreRef.current), 800); return }
-      setTimeout(() => showNextDrink(), 950)
+      triggerShake()
+      addFlash('#ef4444', 0.3)
+      if (newLives <= 0) { setTimeout(() => onGameOver(scoreRef.current), 850); return }
+      setTimeout(() => showNextDrink(), 1000)
     }
   }
 
@@ -205,7 +267,6 @@ function GameScreen({ onGameOver }) {
       x: e.clientX - dragStartRef.current.x,
       y: e.clientY - dragStartRef.current.y,
     })
-    // Detect which bucket the pointer is over
     let hit = null
     for (const [catId, el] of Object.entries(bucketRefs.current)) {
       if (!el) continue
@@ -232,15 +293,36 @@ function GameScreen({ onGameOver }) {
   // ── Derived display values ─────────────────────────────────
   const timerPct   = maxTime > 0 ? (timeLeft / maxTime) * 100 : 0
   const timerColor = timerPct > 50 ? '#34d399' : timerPct > 25 ? '#fbbf24' : '#ef4444'
-
-  const { mult: currentComboMult, flames, label: comboLabel } = getComboInfo(combo)
+  const { flames, label: comboLabel } = getComboInfo(combo)
   const levelMultDisplay = (1 + (level - 1) * 0.1).toFixed(1)
 
   // ── Render ─────────────────────────────────────────────────
   return (
-    <div className="screen game-screen">
+    <div className="screen game-screen" ref={gameScreenRef}>
 
-      {/* ── HUD: score / lives / level ── */}
+      {/* ── Particle bursts (fixed, above everything) ── */}
+      {bursts.map(b => <Particles key={b.id} type={b.type} />)}
+
+      {/* ── Screen flash overlays ── */}
+      {flashes.map(f => (
+        <div
+          key={f.id}
+          className="screen-flash"
+          style={{ background: f.color, '--flash-alpha': f.alpha }}
+        />
+      ))}
+
+      {/* ── Combo milestone banner ── */}
+      {milestone && (
+        <div
+          key={milestone.key}
+          className={`milestone-banner milestone-banner--tier-${milestone.tier}`}
+        >
+          {milestone.text}
+        </div>
+      )}
+
+      {/* ── HUD ── */}
       <div className="hud">
         <div className="hud-item">
           <span className="hud-label">Score</span>
@@ -256,7 +338,6 @@ function GameScreen({ onGameOver }) {
         </div>
         <div className="hud-item">
           <span className="hud-label">Level</span>
-          {/* Show the level multiplier under the level number */}
           <span className="hud-value">{level}</span>
           <span className="hud-sublabel">Lv.×{levelMultDisplay}</span>
         </div>
@@ -268,7 +349,7 @@ function GameScreen({ onGameOver }) {
         <span className="timer-text">{timeLeft}s</span>
       </div>
 
-      {/* ── Combo streak bar (only visible when combo ≥ 1) ── */}
+      {/* ── Combo bar ── */}
       <div className={`combo-bar ${combo > 0 ? 'combo-bar--active' : ''}`}>
         {combo > 0 ? (
           <>
@@ -288,7 +369,7 @@ function GameScreen({ onGameOver }) {
         <div className="levelup-banner">⬆️ Level {level}! ×{levelMultDisplay} now!</div>
       )}
 
-      {/* ── Correct / wrong flash overlay ── */}
+      {/* ── Correct / wrong flash ── */}
       {feedback && (
         <div className={`feedback-flash feedback-flash--${feedback}`}>
           {feedback === 'correct' ? '✅ Correct!' : '❌ Wrong!'}
@@ -297,7 +378,6 @@ function GameScreen({ onGameOver }) {
 
       {/* ── Drink card (draggable) ── */}
       <div className="card-area">
-        {/* Floating "+N pts" popup — key forces re-animation each correct answer */}
         {pointPop && (
           <div key={pointPop.key} className="point-pop">
             +{pointPop.pts}
@@ -306,7 +386,6 @@ function GameScreen({ onGameOver }) {
             )}
           </div>
         )}
-
         <DrinkCard
           ref={cardRef}
           drink={currentDrink}

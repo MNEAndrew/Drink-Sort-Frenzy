@@ -786,3 +786,167 @@ body {
   .bucket__emoji { font-size: 1.9rem; }
   .bucket__label { font-size: 0.7rem; }
 }
+
+/* ============================================================
+   10. Particle effects
+   ============================================================ */
+
+/* Fixed overlay centred on the viewport.
+   Each particle is absolutely positioned relative to this centre. */
+.particles-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  animation: particleFly ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes particleFly {
+  0% {
+    /* Start centred on the overlay origin, no movement */
+    transform: translate(-50%, -50%) translate(0px, 0px) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.85;
+  }
+  100% {
+    /* Fly to the random destination and spin/shrink away */
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.1);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   11. Screen flash overlay
+   ============================================================ */
+
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 800;
+  animation: screenFlash 0.65s ease forwards;
+}
+
+@keyframes screenFlash {
+  0%   { opacity: 0; }
+  18%  { opacity: var(--flash-alpha, 0.35); }
+  100% { opacity: 0; }
+}
+
+/* ============================================================
+   12. Screen shake (applied to .game-screen via JS classList)
+   ============================================================ */
+
+.game-screen--shake {
+  animation: screenShake 0.5s ease !important;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  12%  { transform: translate(-9px,  2px) rotate(-0.6deg); }
+  24%  { transform: translate( 9px, -2px) rotate( 0.6deg); }
+  36%  { transform: translate(-7px,  1px) rotate(-0.4deg); }
+  48%  { transform: translate( 7px, -1px) rotate( 0.4deg); }
+  60%  { transform: translate(-4px,  1px); }
+  72%  { transform: translate( 4px, -1px); }
+  84%  { transform: translate(-2px,  0px); }
+}
+
+/* ============================================================
+   13. Combo milestone banners
+   ============================================================ */
+
+.milestone-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 700;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 20px;
+  padding: 14px 36px;
+  animation: milestonePop ease forwards;
+}
+
+/* ── Tier 1 — ON FIRE (combo 3) ── */
+.milestone-banner--tier-1 {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  background: linear-gradient(135deg, #f97316, #ffd166);
+  color: #1a0533;
+  box-shadow: 0 0 40px rgba(249, 115, 22, 0.7);
+  animation-duration: 1.5s;
+}
+
+/* ── Tier 2 — BLAZING (combo 6) ── */
+.milestone-banner--tier-2 {
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  background: linear-gradient(135deg, #ef4444, #f97316, #ffd166);
+  color: #fff;
+  box-shadow: 0 0 60px rgba(239, 68, 68, 0.75),
+              0 0 120px rgba(249, 115, 22, 0.4);
+  animation-duration: 1.6s;
+}
+
+/* ── Tier 3 — UNSTOPPABLE (combo 10) ── */
+.milestone-banner--tier-3 {
+  font-size: clamp(2rem, 7vw, 3rem);
+  background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399, #ffd166);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Outer glow via text-shadow doesn't work on clipped text — use filter instead */
+  filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.9))
+          drop-shadow(0 0 32px rgba(96, 165, 250, 0.6));
+  background-color: transparent;
+  box-shadow: none;
+  padding: 14px 36px;
+  animation-duration: 1.8s;
+}
+
+/* ── Tier 4 — GODLIKE (combo 15+) ── */
+.milestone-banner--tier-4 {
+  font-size: clamp(2.4rem, 8vw, 3.8rem);
+  background: linear-gradient(90deg,
+    #ffd700, #fff, #a78bfa, #ff6b9d, #60a5fa, #34d399, #ffd700);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1))
+          drop-shadow(0 0 40px rgba(255, 107, 157, 0.8))
+          drop-shadow(0 0 60px rgba(96, 165, 250, 0.6));
+  background-color: transparent;
+  box-shadow: none;
+  animation: milestonePop ease forwards, rainbowShift 1.5s linear infinite;
+  animation-duration: 1.9s, 1.5s;
+}
+
+@keyframes milestonePop {
+  0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.4); }
+  18%  { opacity: 1;   transform: translate(-50%, -50%) scale(1.18); }
+  30%  { transform: translate(-50%, -50%) scale(0.95); }
+  42%  { transform: translate(-50%, -50%) scale(1.06); }
+  55%  { transform: translate(-50%, -50%) scale(1); }
+  78%  { opacity: 1;   transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0;   transform: translate(-50%, -50%) scale(0.85) translateY(-30px); }
+}
+
+@keyframes rainbowShift {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}

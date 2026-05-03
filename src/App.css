@@ -243,7 +243,9 @@ body {
 /* ── 5. Game Screen ───────────────────────────────────────── */
 .game-screen {
   position: relative;
-  gap: 14px;
+  gap: 12px;
+  /* Extra bottom padding so the buckets aren't flush against the edge */
+  padding-bottom: 28px !important;
 }
 
 /* HUD (score / lives / level) */
@@ -322,60 +324,100 @@ body {
   justify-content: center;
 }
 
-/* Category buttons section */
-.category-buttons {
+/* ── Drop-zone buckets ────────────────────────────────────── */
+.buckets-section {
   width: 100%;
 }
 
-.category-prompt {
-  font-size: 0.85rem;
+.buckets-prompt {
+  font-size: 0.82rem;
   color: var(--text-muted);
   text-align: center;
   margin-bottom: 10px;
-  min-height: 1.2em;
+  min-height: 1.3em;
+  transition: color 0.2s;
 }
 
-.cat-btn-grid {
+.buckets-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
+  align-items: end;
 }
 
-.cat-btn {
+/* Individual bucket */
+.bucket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+  transition: transform 0.2s ease;
+}
+
+/* The rim (open top of the bucket) */
+.bucket__rim {
+  width: 90%;
+  height: 8px;
+  border-radius: 4px 4px 0 0;
+  background: var(--cat-color);
+  opacity: 0.7;
+  transition: opacity 0.2s, width 0.2s;
+}
+
+/* The bucket body */
+.bucket__body {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 12px 4px 10px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  color: var(--text-primary);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-align: center;
-  transition: transform 0.15s, background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  padding: 10px 4px 12px;
+  background: color-mix(in srgb, var(--cat-color) 14%, rgba(0,0,0,0.35));
+  border: 2px solid color-mix(in srgb, var(--cat-color) 55%, transparent);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
-.cat-btn-emoji {
+.bucket__emoji {
   font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 0.2s;
 }
 
-.cat-btn-label {
-  font-size: 0.62rem;
-  line-height: 1.2;
+.bucket__label {
+  font-size: 0.6rem;
+  font-weight: 700;
   color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+  transition: color 0.2s;
 }
 
-.cat-btn--active {
+/* ── Hovered bucket — lights up when a card is dragged over it ── */
+.bucket--hovered {
+  transform: translateY(-6px) scale(1.06);
+}
+
+.bucket--hovered .bucket__rim {
+  width: 100%;
+  opacity: 1;
+}
+
+.bucket--hovered .bucket__body {
+  background: color-mix(in srgb, var(--cat-color) 32%, rgba(0,0,0,0.2));
   border-color: var(--cat-color);
-  background: color-mix(in srgb, var(--cat-color) 18%, transparent);
+  box-shadow:
+    0 0 0 2px var(--cat-color),
+    0 8px 28px color-mix(in srgb, var(--cat-color) 55%, transparent);
 }
 
-.cat-btn--active:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cat-color) 30%, transparent);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--cat-color) 45%, transparent);
+.bucket--hovered .bucket__emoji {
+  transform: scale(1.3);
+}
+
+.bucket--hovered .bucket__label {
+  color: var(--text-primary);
 }
 
 /* Level-up banner */
@@ -429,29 +471,40 @@ body {
 /* ── 6. Drink Card ────────────────────────────────────────── */
 .drink-card {
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
   background: linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.05));
   border: 2px solid var(--border);
   border-radius: 24px;
-  padding: 28px 20px 20px;
+  padding: 24px 20px 18px;
   text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  /* Smooth snap-back when drag ends */
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.2s,
+              box-shadow 0.2s;
   position: relative;
   backdrop-filter: blur(8px);
+  /* Prevent the card from being a drag image in Firefox */
+  -webkit-user-drag: none;
+  will-change: transform;
 }
 
-.drink-card:hover {
-  transform: translateY(-4px);
+.drink-card:not(.drink-card--dragging):not(.drink-card--paused):hover {
+  transform: translateY(-3px) scale(1.01);
   border-color: rgba(255, 255, 255, 0.35);
 }
 
-.drink-card--selected {
+/* While the player is actively dragging — no transition (instant follow) */
+.drink-card--dragging {
+  transition: none !important;
   border-color: var(--accent2);
-  box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.35),
-              0 10px 40px rgba(255, 209, 102, 0.2);
-  transform: translateY(-4px);
-  animation: selectedPulse 1.5s ease infinite;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55),
+              0 0 0 3px rgba(255, 209, 102, 0.5);
+  z-index: 200;
+}
+
+/* During answer feedback — dim slightly */
+.drink-card--paused {
+  opacity: 0.6;
 }
 
 .drink-card__emoji {
@@ -484,10 +537,17 @@ body {
   display: inline-block;
 }
 
-.selected-cta {
+/* Shows while dragging */
+.drag-cta {
   color: var(--accent2);
-  background: rgba(255, 209, 102, 0.12);
+  background: rgba(255, 209, 102, 0.15);
   font-weight: 700;
+  animation: pulse 0.6s ease infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
 }
 
 /* ── 7. GameOver Screen ───────────────────────────────────── */
@@ -606,30 +666,32 @@ body {
   50%       { transform: translateY(-6px); }
 }
 
-@keyframes selectedPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.35), 0 10px 40px rgba(255, 209, 102, 0.2); }
-  50%       { box-shadow: 0 0 0 6px rgba(255, 209, 102, 0.55), 0 12px 50px rgba(255, 209, 102, 0.35); }
-}
+/* (selectedPulse removed — drag UI replaced click-to-select) */
 
 /* ── 9. Mobile / Responsive ───────────────────────────────── */
 
 /* Small phones — tighten up spacing */
 @media (max-width: 380px) {
-  .screen { gap: 14px; padding: 18px 14px 28px; }
-  .cat-btn-grid { gap: 6px; }
-  .cat-btn-emoji { font-size: 1.25rem; }
+  .screen { gap: 10px; padding: 16px 12px 24px; }
+  .buckets-row { gap: 5px; }
+  .bucket__emoji { font-size: 1.2rem; }
+  .bucket__label { font-size: 0.55rem; }
+  .bucket__body { padding: 8px 2px 10px; }
   .drink-card__emoji { font-size: 3rem; }
-  .drink-card__name { font-size: 1.25rem; }
+  .drink-card__name { font-size: 1.2rem; }
   .legend-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Very small screens — stack gameover buttons */
+/* Very small screens */
 @media (max-width: 320px) {
   .gameover-buttons { flex-direction: column; }
-  .cat-btn-grid { grid-template-columns: repeat(3, 1fr); }
+  .bucket__label { display: none; }   /* hide labels, emoji only */
+  .bucket__body { padding: 8px 2px; }
 }
 
-/* Wider screens — give the game a bit more breathing room */
+/* Wider screens — give the game more breathing room */
 @media (min-width: 600px) {
-  .screen { padding: 32px 36px 40px; gap: 24px; }
+  .screen { padding: 32px 36px 40px; gap: 20px; }
+  .bucket__emoji { font-size: 1.9rem; }
+  .bucket__label { font-size: 0.7rem; }
 }

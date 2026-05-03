@@ -1,38 +1,65 @@
 // ============================================================
 // DrinkCard.jsx
-// Displays a single drink with its name and emoji.
-// Clicking the card selects it so the player can then pick
-// a category. A selected card gets a highlighted border.
+// The drink card the player drags into a category bucket.
+//
+// Props:
+//   drink        — the drink object { name, category, emoji, hint }
+//   isDragging   — true while the player is dragging the card
+//   dragDelta    — { x, y } offset in px from the card's resting position
+//   paused       — true during answer feedback; disables dragging
+//   onPointerDown / onPointerMove / onPointerUp  — drag handlers from GameScreen
+//   ref          — forwarded so GameScreen can call setPointerCapture on the element
 // ============================================================
 
-function DrinkCard({ drink, isSelected, onClick }) {
+import { forwardRef } from 'react'
+
+const DrinkCard = forwardRef(function DrinkCard(
+  { drink, isDragging, dragDelta, paused, onPointerDown, onPointerMove, onPointerUp },
+  ref
+) {
+  // Visually move the card by the drag delta using CSS transform.
+  // When isDragging becomes false the delta resets to {0,0} and
+  // the CSS transition animates a smooth snap-back.
+  const transform = isDragging
+    ? `translate(${dragDelta.x}px, ${dragDelta.y}px) scale(1.06)`
+    : 'translate(0px, 0px) scale(1)'
+
   return (
     <div
-      className={`drink-card ${isSelected ? 'drink-card--selected' : ''}`}
-      onClick={onClick}
-      role="button"
-      aria-pressed={isSelected}
-      tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && onClick()}
+      ref={ref}
+      className={`drink-card ${isDragging ? 'drink-card--dragging' : ''} ${paused ? 'drink-card--paused' : ''}`}
+      style={{
+        transform,
+        // Disable browser's native touch scroll/zoom while dragging
+        touchAction: 'none',
+        // Prevent text selection being triggered during drag
+        userSelect: 'none',
+        cursor: paused ? 'default' : isDragging ? 'grabbing' : 'grab',
+      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      // Cancel drag if pointer leaves the captured area cleanly
+      onPointerCancel={onPointerUp}
     >
-      {/* Big emoji for visual flair */}
+      {/* Large emoji for instant visual recognition */}
       <div className="drink-card__emoji">{drink.emoji}</div>
 
       {/* Drink name */}
       <div className="drink-card__name">{drink.name}</div>
 
-      {/* Optional subtle hint */}
+      {/* Subtle hint text */}
       <div className="drink-card__hint">{drink.hint}</div>
 
-      {/* Tap-to-select indicator */}
-      {!isSelected && (
-        <div className="drink-card__cta">Tap to select</div>
+      {/* Drag instruction (hidden while actively dragging) */}
+      {!isDragging && !paused && (
+        <div className="drink-card__cta">🖐 Drag to a bucket below</div>
       )}
-      {isSelected && (
-        <div className="drink-card__cta selected-cta">Now pick a category ↓</div>
+      {isDragging && (
+        <div className="drink-card__cta drag-cta">Drop it! 🎯</div>
       )}
     </div>
   )
-}
+})
 
 export default DrinkCard

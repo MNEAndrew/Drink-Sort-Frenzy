@@ -16,15 +16,14 @@
 // ============================================================
 
 import { useState, useEffect, useRef } from 'react'
-import { DRINKS, CATEGORIES } from '../data/drinks'
 import DrinkCard from './DrinkCard'
 import Particles from './Particles'
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function getRandomDrink(current) {
+function getRandomItem(items, current) {
   let pick
-  do { pick = DRINKS[Math.floor(Math.random() * DRINKS.length)] }
+  do { pick = items[Math.floor(Math.random() * items.length)] }
   while (pick === current)
   return pick
 }
@@ -54,7 +53,7 @@ function getMilestoneForCombo(newCombo) {
 
 // ── Component ─────────────────────────────────────────────────
 
-function GameScreen({ onGameOver }) {
+function GameScreen({ onGameOver, categories, items }) {
 
   // ── Core game state ────────────────────────────────────────
   const [score,        setScore]        = useState(0)
@@ -62,7 +61,7 @@ function GameScreen({ onGameOver }) {
   const [level,        setLevel]        = useState(1)
   const [streak,       setStreak]       = useState(0)   // total correct → level-ups
   const [combo,        setCombo]        = useState(0)   // consecutive correct → multiplier
-  const [currentDrink, setCurrentDrink] = useState(() => getRandomDrink(null))
+  const [currentDrink, setCurrentDrink] = useState(() => getRandomItem(items, null))
   const [timeLeft,     setTimeLeft]     = useState(() => timerForLevel(1))
   const [maxTime,      setMaxTime]      = useState(() => timerForLevel(1))
   const [feedback,     setFeedback]     = useState(null)
@@ -162,7 +161,7 @@ function GameScreen({ onGameOver }) {
   function showNextDrink(newLevel) {
     const lvl = newLevel ?? levelRef.current
     const t   = timerForLevel(lvl)
-    setCurrentDrink(getRandomDrink(currentDrink))
+    setCurrentDrink(getRandomItem(items, currentDrink))
     setFeedback(null)
     setTimeLeft(t)
     setMaxTime(t)
@@ -317,6 +316,11 @@ function GameScreen({ onGameOver }) {
   const { flames, label: comboLabel } = getComboInfo(combo)
   const levelMultDisplay = (1 + (level - 1) * 0.1).toFixed(1)
 
+  // Dynamic bucket grid: ≤5 → 1 row; 6-14 → 2 rows (ceil halved)
+  const bucketCols = categories.length <= 5
+    ? categories.length
+    : Math.ceil(categories.length / 2)
+
   // ── Render ─────────────────────────────────────────────────
   return (
     <div className="screen game-screen" ref={gameScreenRef}>
@@ -424,8 +428,11 @@ function GameScreen({ onGameOver }) {
         <p className="buckets-prompt">
           {isDragging ? '🎯 Drop it in the right bucket!' : '👆 Drag the card to a category'}
         </p>
-        <div className="buckets-row">
-          {CATEGORIES.map(cat => (
+        <div
+          className="buckets-row"
+          style={{ gridTemplateColumns: `repeat(${bucketCols}, 1fr)` }}
+        >
+          {categories.map(cat => (
             <div
               key={cat.id}
               className={`bucket ${hoveredCat === cat.id ? 'bucket--hovered' : ''}`}

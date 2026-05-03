@@ -794,6 +794,129 @@ body {
 }
 
 /* ============================================================
+   Mode Select Screen
+   ============================================================ */
+.mode-select-screen {
+  gap: 24px;
+  justify-content: flex-start;
+  padding-top: 40px;
+}
+
+.mode-select-header {
+  text-align: center;
+}
+
+.mode-select-title {
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff6b9d, #ffd166, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+
+.mode-select-sub {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.mode-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.mode-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  color: var(--text-primary);
+  font-family: inherit;
+  width: 100%;
+}
+
+.mode-card:hover,
+.mode-card:focus-visible {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+}
+
+.mode-card__emoji {
+  font-size: 2.8rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.mode-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mode-card__name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.mode-card__desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.mode-card__cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mode-card__cat-pill {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mode-card__cat-more {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+.mode-card__arrow {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Change mode button on start screen */
+.btn-change-mode {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 280px;
+  font-size: 0.9rem;
+}
+.btn-change-mode:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* ============================================================
    Leaderboard button on Start Screen
    ============================================================ */
 .brand-disclaimer {

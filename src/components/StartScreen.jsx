@@ -1,20 +1,23 @@
 // ============================================================
 // StartScreen.jsx
-// Title screen — shows instructions, category legend, high
-// score, a Start button, and a Leaderboard button.
+// Title screen — shows mode-specific title, instructions,
+// category/region legend, high score, and action buttons.
 // ============================================================
 
-import { CATEGORIES } from '../data/drinks'
+function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) {
+  const { categories, name, emoji, tagline, noun = 'category', disclaimer } = mode
 
-function StartScreen({ highScore, onStart, onLeaderboard }) {
+  // Build a decorative emoji row from the first 5 category emojis
+  const emojiRow = categories.slice(0, 5).map(c => c.emoji).join(' ')
+
   return (
     <div className="screen start-screen">
 
       {/* ── Title ── */}
       <div className="start-title-wrap">
-        <div className="start-emoji-row">🍹 🍸 ☕ 🥤 🍺</div>
-        <h1 className="start-title">Drink Sort Frenzy</h1>
-        <p className="start-tagline">Sort drinks before time runs out!</p>
+        <div className="start-emoji-row">{emojiRow}</div>
+        <h1 className="start-title">{name}</h1>
+        <p className="start-tagline">{tagline}</p>
       </div>
 
       {/* ── High score badge ── */}
@@ -28,20 +31,24 @@ function StartScreen({ highScore, onStart, onLeaderboard }) {
       <div className="how-to-play">
         <h2>How to Play</h2>
         <ol>
-          <li>A drink card will appear on screen.</li>
-          <li><strong>Drag</strong> the card to the correct category bucket.</li>
+          <li>A card will appear on screen.</li>
+          <li><strong>Drag</strong> it to the correct {noun} bucket.</li>
           <li>✅ Correct = points! ❌ Wrong = lose a life (❤️).</li>
           <li>Answer fast — leftover time adds bonus points.</li>
-          <li>Every <strong>5 correct answers</strong> = level up (faster timer).</li>
+          <li>Every <strong>5 correct</strong> = level up (faster timer).</li>
           <li>Build a <strong>combo streak</strong> for score multipliers 🔥</li>
         </ol>
       </div>
 
-      {/* ── Category legend ── */}
+      {/* ── Category / Region legend ── */}
       <div className="category-legend">
-        <h2>Categories</h2>
-        <div className="legend-grid">
-          {CATEGORIES.map(cat => (
+        <h2>{noun === 'region' ? 'Regions' : 'Categories'}</h2>
+        <div className="legend-grid" style={{
+          gridTemplateColumns: categories.length <= 5
+            ? `repeat(${categories.length}, 1fr)`
+            : `repeat(${Math.ceil(categories.length / 2)}, 1fr)`
+        }}>
+          {categories.map(cat => (
             <div key={cat.id} className="legend-item" style={{ borderColor: cat.color }}>
               <span className="legend-emoji">{cat.emoji}</span>
               <span className="legend-label">{cat.label}</span>
@@ -55,14 +62,20 @@ function StartScreen({ highScore, onStart, onLeaderboard }) {
         🚀 Start Game
       </button>
 
-      <button className="btn btn-leaderboard-start" onClick={onLeaderboard}>
-        🏆 Leaderboard
+      {onLeaderboard && (
+        <button className="btn btn-leaderboard-start" onClick={onLeaderboard}>
+          🏆 Leaderboard
+        </button>
+      )}
+
+      <button className="btn btn-change-mode" onClick={onChangeMode}>
+        🎮 Change Mode
       </button>
 
-      {/* Brand disclaimer */}
-      <p className="brand-disclaimer">
-        Brand names belong to their respective owners. Fan-made project — not affiliated with any beverage company.
-      </p>
+      {/* Disclaimer */}
+      {disclaimer && (
+        <p className="brand-disclaimer">{disclaimer}</p>
+      )}
     </div>
   )
 }

@@ -20,7 +20,7 @@ const STATE = {
 
 function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, onLeaderboard }) {
   const [submitState, setSubmitState] = useState(
-    supabase ? STATE.CHECKING : STATE.UNAVAIL
+    (supabase && onLeaderboard) ? STATE.CHECKING : STATE.UNAVAIL
   )
   const [playerName, setPlayerName] = useState('')
   const [nameError,  setNameError]  = useState('')
@@ -28,8 +28,8 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
 
   // ── Check qualification on mount ──────────────────────────
   useEffect(() => {
-    if (!supabase || score <= 0) {
-      setSubmitState(score <= 0 ? STATE.NO_QUALIFY : STATE.UNAVAIL)
+    if (!supabase || !onLeaderboard || score <= 0) {
+      setSubmitState((!supabase || !onLeaderboard) ? STATE.UNAVAIL : STATE.NO_QUALIFY)
       return
     }
 
@@ -164,8 +164,8 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
         )}
       </div>
 
-      {/* ── Leaderboard button (always visible after check) ── */}
-      {(submitState === STATE.NO_QUALIFY || submitState === STATE.UNAVAIL) && (
+      {/* ── Leaderboard button (only when leaderboard is available) ── */}
+      {onLeaderboard && (submitState === STATE.NO_QUALIFY || submitState === STATE.UNAVAIL) && (
         <button className="btn btn-view-lb" onClick={() => onLeaderboard(null)}>
           🏆 View Leaderboard
         </button>

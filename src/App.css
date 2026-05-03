@@ -497,8 +497,9 @@ body {
 .drink-card--dragging {
   transition: none !important;
   border-color: var(--accent2);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55),
-              0 0 0 3px rgba(255, 209, 102, 0.5);
+  /* Tighter shadow to suit the shrunken size */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6),
+              0 0 0 3px rgba(255, 209, 102, 0.6);
   z-index: 200;
 }
 

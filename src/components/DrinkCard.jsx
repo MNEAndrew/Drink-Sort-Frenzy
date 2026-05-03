@@ -20,8 +20,10 @@ const DrinkCard = forwardRef(function DrinkCard(
   // Visually move the card by the drag delta using CSS transform.
   // When isDragging becomes false the delta resets to {0,0} and
   // the CSS transition animates a smooth snap-back.
+  // While dragging: shrink to ~45% so the card doesn't cover the buckets,
+  // and shift it upward so it floats above the pointer rather than over the drop zones.
   const transform = isDragging
-    ? `translate(${dragDelta.x}px, ${dragDelta.y}px) scale(1.06)`
+    ? `translate(${dragDelta.x}px, calc(${dragDelta.y}px - 60px)) scale(0.45)`
     : 'translate(0px, 0px) scale(1)'
 
   return (

@@ -44,10 +44,19 @@ const DrinkCard = forwardRef(function DrinkCard(
       // Cancel drag if pointer leaves the captured area cleanly
       onPointerCancel={onPointerUp}
     >
-      {/* Large emoji for instant visual recognition */}
-      <div className="drink-card__emoji">{drink.emoji}</div>
+      {/* Champion portrait OR emoji */}
+      {drink.image ? (
+        <img
+          className="drink-card__portrait"
+          src={drink.image}
+          alt={drink.name}
+          draggable={false}
+        />
+      ) : (
+        <div className="drink-card__emoji">{drink.emoji}</div>
+      )}
 
-      {/* Drink name */}
+      {/* Name */}
       <div className="drink-card__name">{drink.name}</div>
 
       {/* Subtle hint text */}

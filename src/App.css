@@ -620,18 +620,19 @@ body {
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.35));
 }
 
-/* Champion portrait (LoL mode) — zooms into the circular icon inside the image canvas */
+/* Champion portrait (LoL mode) — zooms into the circular icon inside the image canvas.
+   The source PNGs are ~1024×1024 with the actual champion circle ~25% of the canvas,
+   so background-size needs to be ~400% to fill the container with the champion. */
 .drink-card__portrait {
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  /* The source PNGs have a large transparent canvas; background-size zooms into the icon */
-  background-size: 250%;
+  background-size: 400%;
   background-position: center center;
   background-repeat: no-repeat;
   margin: 0 auto 10px;
-  border: 3px solid rgba(99, 179, 237, 0.6);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+  border: 3px solid rgba(99, 179, 237, 0.7);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.1);
   flex-shrink: 0;
 }
 

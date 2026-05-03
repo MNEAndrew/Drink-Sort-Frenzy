@@ -18,13 +18,13 @@ const STATE = {
   UNAVAIL:    'unavail',    // Supabase not configured
 }
 
-function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, onLeaderboard }) {
+function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, onLeaderboard, modeId = 'drinks' }) {
   const [submitState, setSubmitState] = useState(
     (supabase && onLeaderboard) ? STATE.CHECKING : STATE.UNAVAIL
   )
   const [playerName, setPlayerName] = useState('')
   const [nameError,  setNameError]  = useState('')
-  const [submittedId, setSubmittedId] = useState(null)  // id of the inserted row
+  const [submittedId, setSubmittedId] = useState(null)
 
   // ── Check qualification on mount ──────────────────────────
   useEffect(() => {
@@ -33,7 +33,7 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
       return
     }
 
-    qualifiesForTop100(score).then(qualifies => {
+    qualifiesForTop100(score, modeId).then(qualifies => {
       setSubmitState(qualifies ? STATE.QUALIFIES : STATE.NO_QUALIFY)
     })
   }, [score])
@@ -48,7 +48,7 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
     setNameError('')
     setSubmitState(STATE.SUBMITTING)
 
-    const { data, error } = await submitScore(trimmed, score)
+    const { data, error } = await submitScore(trimmed, score, modeId)
 
     if (error) {
       setNameError('Submission failed — please try again.')

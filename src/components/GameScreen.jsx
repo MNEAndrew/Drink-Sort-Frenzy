@@ -316,10 +316,8 @@ function GameScreen({ onGameOver, categories, items }) {
   const { flames, label: comboLabel } = getComboInfo(combo)
   const levelMultDisplay = (1 + (level - 1) * 0.1).toFixed(1)
 
-  // Dynamic bucket grid: ≤5 → 1 row; 6-14 → 2 rows (ceil halved)
-  const bucketCols = categories.length <= 5
-    ? categories.length
-    : Math.ceil(categories.length / 2)
+  // Pass category count as a CSS var so CSS can make layout decisions
+  const bucketCount = categories.length
 
   // ── Render ─────────────────────────────────────────────────
   return (
@@ -430,7 +428,7 @@ function GameScreen({ onGameOver, categories, items }) {
         </p>
         <div
           className="buckets-row"
-          style={{ gridTemplateColumns: `repeat(${bucketCols}, 1fr)` }}
+          style={{ '--bucket-count': bucketCount }}
         >
           {categories.map(cat => (
             <div

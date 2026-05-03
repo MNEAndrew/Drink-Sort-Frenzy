@@ -1,32 +1,42 @@
 // ============================================================
 // leaderboard.js — All Supabase queries for the leaderboard
+//
+// Each mode has its own independent leaderboard.
+// The `leaderboard` table needs a `mode` column:
+//
+//   ALTER TABLE leaderboard
+//     ADD COLUMN IF NOT EXISTS mode TEXT NOT NULL DEFAULT 'drinks';
+//
+// Run this once in your Supabase SQL Editor.
 // ============================================================
 
 import { supabase } from './supabase'
 
-/** Fetch the top N scores ordered highest first. */
-export async function getTopScores(limit = 100) {
+/** Fetch the top N scores for a given mode, ordered highest first. */
+export async function getTopScores(mode = 'drinks', limit = 100) {
   if (!supabase) return { data: null, error: 'not_configured' }
 
   return supabase
     .from('leaderboard')
     .select('id, name, score, created_at')
+    .eq('mode', mode)
     .order('score', { ascending: false })
     .limit(limit)
 }
 
 /**
- * Returns true when the given score would place in the top 100.
- * Also returns true when fewer than 100 entries exist.
+ * Returns true when the given score would place in the top 100
+ * for the specified mode. Also returns true when fewer than 100
+ * entries exist for that mode.
  */
-export async function qualifiesForTop100(score) {
+export async function qualifiesForTop100(score, mode = 'drinks') {
   if (!supabase) return false
   if (score <= 0) return false
 
-  // Fetch the score at rank 100 (0-indexed → range 99,99)
   const { data } = await supabase
     .from('leaderboard')
     .select('score')
+    .eq('mode', mode)
     .order('score', { ascending: false })
     .range(99, 99)
 
@@ -37,10 +47,10 @@ export async function qualifiesForTop100(score) {
 }
 
 /**
- * Insert a new score entry.
+ * Insert a new score entry for a given mode.
  * Returns { data, error } from Supabase.
  */
-export async function submitScore(name, score) {
+export async function submitScore(name, score, mode = 'drinks') {
   if (!supabase) return { data: null, error: 'not_configured' }
 
   const trimmed = name.trim().slice(0, 20)
@@ -48,7 +58,7 @@ export async function submitScore(name, score) {
 
   return supabase
     .from('leaderboard')
-    .insert([{ name: trimmed, score }])
+    .insert([{ name: trimmed, score, mode }])
     .select()
     .single()
 }

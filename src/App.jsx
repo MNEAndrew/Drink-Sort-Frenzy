@@ -38,7 +38,7 @@ const MODES = [
     noun:        'region',
     categories:  LOL_CATS,
     items:       LOL_ITEMS,
-    hasLeaderboard: false,
+    hasLeaderboard: true,
     disclaimer:  'All champion names belong to Riot Games. Fan-made project — not affiliated with Riot Games.',
   },
 ]
@@ -117,6 +117,7 @@ function App() {
           score={lastScore}
           highScore={highScore}
           isNewHighScore={isNewHigh}
+          modeId={activeMode.id}
           onRestart={() => setScreen('game')}
           onHome={() => setScreen('start')}
           onLeaderboard={activeMode.hasLeaderboard
@@ -125,9 +126,11 @@ function App() {
         />
       )}
 
-      {screen === 'leaderboard' && (
+      {screen === 'leaderboard' && activeMode && (
         <Leaderboard
           highlightId={submittedId}
+          modeId={activeMode.id}
+          modeName={activeMode.name}
           onBack={() => setScreen(lbReturnTo)}
         />
       )}

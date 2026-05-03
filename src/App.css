@@ -212,7 +212,8 @@ body {
 
 .legend-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  /* auto-fill so 5 drink cats use full width and 14 LoL regions wrap into ~3 rows */
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 8px;
 }
 
@@ -243,9 +244,12 @@ body {
 /* ── 5. Game Screen ───────────────────────────────────────── */
 .game-screen {
   position: relative;
-  gap: 12px;
-  /* Extra bottom padding so the buckets aren't flush against the edge */
-  padding-bottom: 28px !important;
+  gap: 10px;
+  padding-bottom: 20px !important;
+  /* Allow game screen to fill available height on mobile */
+  min-height: 100dvh;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
 /* HUD (score / lives / level) */
@@ -374,12 +378,15 @@ body {
 
 /* ── Floating +N pts popup ────────────────────────────────── */
 
-/* Card area needs relative positioning so the popup is anchored to it */
+/* Card area: flex-shrinks as little as possible even when buckets take space */
 .card-area {
   width: 100%;
   display: flex;
   justify-content: center;
   position: relative;
+  flex: 1;
+  min-height: 160px;
+  align-items: center;
 }
 
 .point-pop {
@@ -430,8 +437,10 @@ body {
 
 .buckets-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  /* auto-fill: fills the row with columns at least 52px wide,
+     expanding evenly. Works for 5 drinks cats AND 14 LoL regions. */
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 6px;
   align-items: end;
 }
 
@@ -460,8 +469,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 4px 12px;
+  gap: 3px;
+  padding: 8px 3px 10px;
   background: color-mix(in srgb, var(--cat-color) 14%, rgba(0,0,0,0.35));
   border: 2px solid color-mix(in srgb, var(--cat-color) 55%, transparent);
   border-top: none;
@@ -476,12 +485,18 @@ body {
 }
 
 .bucket__label {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: var(--text-muted);
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.15;
   transition: color 0.2s;
+  /* Prevent long region names from breaking layout */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 100%;
 }
 
 /* ── Hovered bucket — lights up when a card is dragged over it ── */
@@ -767,30 +782,67 @@ body {
 
 /* ── 9. Mobile / Responsive ───────────────────────────────── */
 
-/* Small phones — tighten up spacing */
-@media (max-width: 380px) {
-  .screen { gap: 10px; padding: 16px 12px 24px; }
-  .buckets-row { gap: 5px; }
-  .bucket__emoji { font-size: 1.2rem; }
-  .bucket__label { font-size: 0.55rem; }
-  .bucket__body { padding: 8px 2px 10px; }
+/* Make all non-game screens scrollable on short viewports */
+.start-screen,
+.gameover-screen,
+.leaderboard-screen,
+.mode-select-screen {
+  max-height: 100dvh;
+  overflow-y: auto;
+}
+
+/* app-wrapper: stick to top on small phones instead of centering */
+@media (max-width: 520px) {
+  .app-wrapper { align-items: flex-start; padding: 8px; }
+  .screen { padding: 16px 12px 24px; gap: 14px; }
+}
+
+/* Medium phones (≤ 420px) */
+@media (max-width: 420px) {
+  .screen { gap: 10px; padding: 12px 10px 20px; }
+  .bucket__emoji { font-size: 1.3rem; }
+  .bucket__label { font-size: 0.53rem; }
+  .bucket__body { padding: 7px 2px 9px; }
   .drink-card__emoji { font-size: 3rem; }
   .drink-card__name { font-size: 1.2rem; }
-  .legend-grid { grid-template-columns: repeat(3, 1fr); }
+  .hud { padding: 10px 14px; }
+  .hud-value { font-size: 1.1rem; }
+  .legend-grid { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); }
+  .mode-card { padding: 14px; gap: 12px; }
+  .mode-card__emoji { font-size: 2.2rem; }
+  .mode-card__name { font-size: 1.05rem; }
+  .mode-card__desc { font-size: 0.73rem; }
+  .mode-card__cat-pill { font-size: 0.6rem; padding: 2px 5px; }
+}
+
+/* Small phones (≤ 360px) */
+@media (max-width: 360px) {
+  .screen { gap: 8px; padding: 10px 8px 16px; }
+  .bucket__emoji { font-size: 1.1rem; }
+  .bucket__label { font-size: 0.48rem; }
+  .bucket__body { padding: 6px 2px 8px; }
+  .card-area { min-height: 130px; }
 }
 
 /* Very small screens */
 @media (max-width: 320px) {
   .gameover-buttons { flex-direction: column; }
   .bucket__label { display: none; }
-  .bucket__body { padding: 8px 2px; }
+  .bucket__body { padding: 6px 2px; }
+  .card-area { min-height: 110px; }
 }
 
-/* Wider screens — give the game more breathing room */
-@media (min-width: 600px) {
-  .screen { padding: 32px 36px 40px; gap: 20px; }
+/* Wider screens */
+@media (min-width: 560px) {
+  .screen { padding: 28px 32px 36px; gap: 18px; }
+  .buckets-row { gap: 8px; }
+  .bucket__emoji { font-size: 1.7rem; }
+  .bucket__label { font-size: 0.65rem; }
+}
+@media (min-width: 700px) {
+  .screen { max-width: 560px; }
   .bucket__emoji { font-size: 1.9rem; }
-  .bucket__label { font-size: 0.7rem; }
+  .bucket__label { font-size: 0.72rem; }
 }
 
 /* ============================================================

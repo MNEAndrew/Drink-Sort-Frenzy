@@ -43,11 +43,7 @@ function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) 
       {/* ── Category / Region legend ── */}
       <div className="category-legend">
         <h2>{noun === 'region' ? 'Regions' : 'Categories'}</h2>
-        <div className="legend-grid" style={{
-          gridTemplateColumns: categories.length <= 5
-            ? `repeat(${categories.length}, 1fr)`
-            : `repeat(${Math.ceil(categories.length / 2)}, 1fr)`
-        }}>
+        <div className="legend-grid" style={{ '--bucket-count': categories.length }}>
           {categories.map(cat => (
             <div key={cat.id} className="legend-item" style={{ borderColor: cat.color }}>
               <span className="legend-emoji">{cat.emoji}</span>

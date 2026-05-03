@@ -49,6 +49,11 @@ export async function qualifiesForTop100(score, mode = 'drinks') {
 /**
  * Insert a new score entry for a given mode.
  * Returns { data, error } from Supabase.
+ *
+ * Falls back to a mode-less insert if the `mode` column doesn't exist
+ * yet (i.e. the ALTER TABLE migration hasn't been run). Once you run:
+ *   ALTER TABLE leaderboard ADD COLUMN IF NOT EXISTS mode TEXT NOT NULL DEFAULT 'drinks';
+ * the full per-mode path is used automatically.
  */
 export async function submitScore(name, score, mode = 'drinks') {
   if (!supabase) return { data: null, error: 'not_configured' }
@@ -56,9 +61,21 @@ export async function submitScore(name, score, mode = 'drinks') {
   const trimmed = name.trim().slice(0, 20)
   if (!trimmed) return { data: null, error: 'empty_name' }
 
-  return supabase
+  // Attempt insert with mode column
+  const result = await supabase
     .from('leaderboard')
     .insert([{ name: trimmed, score, mode }])
     .select()
     .single()
+
+  // If the column doesn't exist yet (Postgres error 42703), retry without it
+  if (result.error?.code === '42703') {
+    return supabase
+      .from('leaderboard')
+      .insert([{ name: trimmed, score }])
+      .select()
+      .single()
+  }
+
+  return result
 }

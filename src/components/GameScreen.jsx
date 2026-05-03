@@ -30,7 +30,9 @@ function getRandomDrink(current) {
 }
 
 function timerForLevel(level) {
-  return Math.max(5, 15 - (level - 1))
+  // −2 s every level, floor at 4 s
+  // Level 1=15s  2=13s  3=11s  4=9s  5=7s  6=5s  7+=4s
+  return Math.max(4, 15 - (level - 1) * 2)
 }
 
 function getComboInfo(combo) {

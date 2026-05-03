@@ -95,7 +95,13 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
 
       <p className="gameover-message">{message}</p>
 
-      {/* ── Leaderboard section ── */}
+      {/* ── Play again / home ── */}
+      <div className="gameover-buttons">
+        <button className="btn btn-restart" onClick={onRestart}>🔄 Play Again</button>
+        <button className="btn btn-home"    onClick={onHome}>🏠 Menu</button>
+      </div>
+
+      {/* ── Leaderboard section (below the action buttons) ── */}
       <div className="lb-submit-box">
 
         {submitState === STATE.CHECKING && (
@@ -165,11 +171,6 @@ function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onHome, o
         </button>
       )}
 
-      {/* ── Play again / home ── */}
-      <div className="gameover-buttons">
-        <button className="btn btn-restart" onClick={onRestart}>🔄 Play Again</button>
-        <button className="btn btn-home"    onClick={onHome}>🏠 Menu</button>
-      </div>
     </div>
   )
 }

@@ -93,9 +93,12 @@ function GameScreen({ onGameOver }) {
   const comboRef      = useRef(combo)
   const timeLeftRef   = useRef(timeLeft)
   const maxTimeRef    = useRef(maxTime)
-  const hoveredCatRef = useRef(null)
-  const dragStartRef  = useRef({ x: 0, y: 0 })
-  const bucketRefs    = useRef({})
+  const hoveredCatRef  = useRef(null)
+  const dragStartRef   = useRef({ x: 0, y: 0 })
+  // The card's centre in screen coordinates at the moment dragging starts.
+  // Used to keep the card centred on the pointer throughout the drag.
+  const cardCenterRef  = useRef({ x: 0, y: 0 })
+  const bucketRefs     = useRef({})
   const cardRef       = useRef(null)
   const gameScreenRef = useRef(null)
 
@@ -258,16 +261,32 @@ function GameScreen({ onGameOver }) {
     if (paused) return
     e.preventDefault()
     cardRef.current?.setPointerCapture(e.pointerId)
+
+    // Record the card's centre so every pointer-move can translate the card
+    // such that its centre stays exactly under the pointer.
+    const rect = cardRef.current.getBoundingClientRect()
+    cardCenterRef.current = {
+      x: rect.left + rect.width  / 2,
+      y: rect.top  + rect.height / 2,
+    }
+
+    // Set initial delta immediately so the card snaps to the pointer on the
+    // very first frame with no visible jump.
+    const initialDelta = {
+      x: e.clientX - cardCenterRef.current.x,
+      y: e.clientY - cardCenterRef.current.y,
+    }
     dragStartRef.current = { x: e.clientX, y: e.clientY }
     setIsDragging(true)
-    setDragDelta({ x: 0, y: 0 })
+    setDragDelta(initialDelta)
   }
 
   function onPointerMove(e) {
     if (!isDragging) return
+    // Keep the card centred on the pointer at all times
     setDragDelta({
-      x: e.clientX - dragStartRef.current.x,
-      y: e.clientY - dragStartRef.current.y,
+      x: e.clientX - cardCenterRef.current.x,
+      y: e.clientY - cardCenterRef.current.y,
     })
     let hit = null
     for (const [catId, el] of Object.entries(bucketRefs.current)) {

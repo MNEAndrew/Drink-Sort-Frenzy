@@ -620,18 +620,19 @@ body {
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.35));
 }
 
-/* Champion portrait image (LoL mode) */
+/* Champion portrait (LoL mode) — zooms into the circular icon inside the image canvas */
 .drink-card__portrait {
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
-  object-fit: cover;
-  object-position: top center;
-  margin-bottom: 10px;
-  border: 3px solid rgba(255,255,255,0.25);
-  box-shadow: 0 4px 18px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+  /* The source PNGs have a large transparent canvas; background-size zooms into the icon */
+  background-size: 250%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: 0 auto 10px;
+  border: 3px solid rgba(99, 179, 237, 0.6);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
   flex-shrink: 0;
-  display: block;
 }
 
 .drink-card__name {

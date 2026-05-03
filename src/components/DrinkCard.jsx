@@ -46,11 +46,11 @@ const DrinkCard = forwardRef(function DrinkCard(
     >
       {/* Champion portrait OR emoji */}
       {drink.image ? (
-        <img
+        <div
           className="drink-card__portrait"
-          src={drink.image}
-          alt={drink.name}
-          draggable={false}
+          role="img"
+          aria-label={drink.name}
+          style={{ backgroundImage: `url(${drink.image})` }}
         />
       ) : (
         <div className="drink-card__emoji">{drink.emoji}</div>

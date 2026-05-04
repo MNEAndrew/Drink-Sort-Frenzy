@@ -2,12 +2,21 @@
 // StartScreen.jsx
 // Title screen — shows mode-specific title, instructions,
 // category/region legend, high score, and action buttons.
+//
+// mode props used here:
+//   name, emoji, tagline, noun, categories, disclaimer, hasAlcohol
 // ============================================================
 
 function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) {
-  const { categories, name, emoji, tagline, noun = 'category', disclaimer } = mode
+  const {
+    categories,
+    name,
+    tagline,
+    noun       = 'category',
+    disclaimer,
+    hasAlcohol = false,
+  } = mode
 
-  // Build a decorative emoji row from the first 5 category emojis
   const emojiRow = categories.slice(0, 5).map(c => c.emoji).join(' ')
 
   return (
@@ -24,6 +33,17 @@ function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) 
       {highScore > 0 && (
         <div className="high-score-badge">
           🏆 Best Score: <strong>{highScore.toLocaleString()}</strong>
+        </div>
+      )}
+
+      {/* ── Alcohol content warning (drinks mode only) ── */}
+      {hasAlcohol && (
+        <div className="alcohol-warning" role="note">
+          <span className="alcohol-warning__icon">🔞</span>
+          <span>
+            This game contains references to alcoholic beverage brands.
+            Play responsibly. Must be of legal drinking age in your region.
+          </span>
         </div>
       )}
 
@@ -53,7 +73,7 @@ function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) 
         </div>
       </div>
 
-      {/* ── Buttons ── */}
+      {/* ── Action buttons ── */}
       <button className="btn btn-start" onClick={onStart}>
         🚀 Start Game
       </button>
@@ -68,10 +88,11 @@ function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) 
         🎮 Change Mode
       </button>
 
-      {/* Disclaimer */}
+      {/* ── Brand disclaimer ── */}
       {disclaimer && (
         <p className="brand-disclaimer">{disclaimer}</p>
       )}
+
     </div>
   )
 }

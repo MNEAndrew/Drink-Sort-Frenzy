@@ -19,3 +19,14 @@ Thumbs.db
 
 # Vite cache
 .vite/
+
+# Capacitor / iOS
+# Commit ios/ (the Xcode project) but ignore CocoaPods build artefacts
+ios/App/Pods/
+ios/App/DerivedData/
+ios/.DS_Store
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+
+# Capacitor / Android (if added later)
+android/

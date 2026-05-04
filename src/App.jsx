@@ -27,6 +27,7 @@ const MODES = [
     categories:  DRINK_CATS,
     items:       DRINKS,
     hasLeaderboard: true,
+    hasAlcohol:  true,
     disclaimer:  'Brand names belong to their respective owners. Fan-made project — not affiliated with any beverage company.',
   },
   {

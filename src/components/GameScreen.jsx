@@ -16,8 +16,9 @@
 // ============================================================
 
 import { useState, useEffect, useRef } from 'react'
-import DrinkCard from './DrinkCard'
-import Particles from './Particles'
+import DrinkCard  from './DrinkCard'
+import Particles  from './Particles'
+import { hapticCorrect, hapticWrong, hapticLevelUp } from '../lib/haptics'
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -236,9 +237,11 @@ function GameScreen({ onGameOver, categories, items }) {
         setLevelUpMsg(true)
         addBurst('levelup')
         addFlash('#60a5fa', 0.32)
+        hapticLevelUp()   // distinct haptic pattern for level-up
         setTimeout(() => setLevelUpMsg(false), 1700)
         setTimeout(() => showNextDrink(newLevel), 1100)
       } else {
+        hapticCorrect()   // medium tap for correct answer
         setTimeout(() => showNextDrink(), 1000)
       }
 
@@ -248,6 +251,7 @@ function GameScreen({ onGameOver, categories, items }) {
       const newLives = livesRef.current - 1
       setLives(newLives); livesRef.current = newLives
       setFeedback('wrong')
+      hapticWrong()   // heavy impact for wrong answer
       triggerShake()
       addFlash('#ef4444', 0.3)
       if (newLives <= 0) { setTimeout(() => onGameOver(scoreRef.current), 850); return }

@@ -1,55 +1,50 @@
 // ============================================================
 // DrinkCard.jsx — Draggable drink/champion card
 //
-// Visual priority:
-//   1. Open Food Facts product photo  (fetched at runtime, cached)
-//   2. LoL champion portrait          (local file, background-image zoom)
-//   3. Emoji                          (always the instant fallback)
+// Visual priority for the card image:
+//   1. drink.imageUrl  — static path you add to drinks.js manually
+//                        e.g. imageUrl: "/drinks/coca-cola.png"
+//   2. drink.image     — LoL champion portrait (local file, zoom trick)
+//   3. drink.emoji     — always the instant fallback
+//
+// Add images by dropping files into public/drinks/ and setting
+// imageUrl in the matching drink object in src/data/drinks.js.
 // ============================================================
 
-import { forwardRef, useState, useEffect } from 'react'
-import { getDrinkImage } from '../lib/drinkImages'
+import { forwardRef, useState } from 'react'
 
-// ── DrinkCard ─────────────────────────────────────────────────────────────────
 const DrinkCard = forwardRef(function DrinkCard(
   { drink, isDragging, dragDelta, paused, onPointerDown, onPointerMove, onPointerUp },
   ref
 ) {
-  // ── Product image state ───────────────────────────────────────────────────
-  // Starts as null (shows emoji) then fills in when the OFF fetch resolves.
-  // The module-level cache in drinkImages.js ensures the same drink only
-  // ever triggers one network request per page load.
-  const [productImg, setProductImg] = useState(null)
-  const [imgError,   setImgError]   = useState(false)
+  // Track whether a product image failed to load so we can fall back to emoji
+  const [imgError, setImgError] = useState(false)
 
-  useEffect(() => {
-    setProductImg(null)
-    setImgError(false)
-    // getDrinkImage returns a cleanup fn — pass it straight to useEffect
-    return getDrinkImage(drink, setProductImg)
-  }, [drink.name])   // re-run when the card changes to a different drink
+  // Reset error state when the drink changes (new card)
+  // Using key prop on the parent handles this — but the state reset here is
+  // a safety net in case the same component instance gets a different drink.
 
-  // ── Drag transform ────────────────────────────────────────────────────────
   const transform = isDragging
     ? `translate(${dragDelta.x}px, calc(${dragDelta.y}px - 60px)) scale(0.45)`
     : 'translate(0px, 0px) scale(1)'
 
-  // ── Decide which visual to render ─────────────────────────────────────────
+  // ── Choose which visual to show ───────────────────────────────────────────
   let visual
-  if (productImg && !imgError) {
-    // OFF product image — object-fit: contain so the label fits cleanly
+
+  if (drink.imageUrl && !imgError) {
+    // Static product photo dropped into public/drinks/
     visual = (
       <img
         className="drink-card__product-img"
-        src={productImg}
+        src={drink.imageUrl}
         alt={drink.name}
         draggable={false}
         onError={() => setImgError(true)}
       />
     )
   } else if (drink.image) {
-    // LoL champion portrait (local file).  Uses background-image + 400% zoom
-    // because the source PNGs have a large transparent canvas around the icon.
+    // LoL champion portrait — background-image + 400% zoom because the source
+    // PNGs have a large transparent canvas around the actual circular icon.
     visual = (
       <div
         className="drink-card__portrait"

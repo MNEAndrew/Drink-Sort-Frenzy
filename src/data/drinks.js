@@ -5,7 +5,7 @@
 //   "Cocktail" | "Mocktail" | "Coffee/Tea" | "Soda/Juice" | "Beer/Wine" | "Liquor"
 //
 // Brand-name drinks are mapped to the closest category:
-//   Soda / Energy / Water / Juice / Sports → "Soda/Juice"
+//   Soda / Energy / Juice / Sports          → "Soda/Juice"
 //   Brewed coffee / tea / boba            → "Coffee/Tea"
 //   Beer / Wine / Hard Seltzer            → "Beer/Wine"
 //   Spirits / Liqueurs                    → "Liquor"
@@ -166,8 +166,8 @@ export const DRINKS = [
   { name: "Bigelow Green Tea",    category:"Coffee/Tea",emoji: "🍵", hint: "Bigelow bagged green tea" },
 
   // ╔══════════════════════════════════════════════════════════╗
-  // ║  SODA / JUICE (includes soda, juice, water,              ║
-  // ║  energy drinks, and sports drinks)                       ║
+  // ║  SODA / JUICE (includes soda, juice,                    ║
+  // ║  energy drinks, and sports drinks)                      ║
   // ╚══════════════════════════════════════════════════════════╝
 
   // ── Generic / Original ────────────────────────────────────
@@ -180,7 +180,6 @@ export const DRINKS = [
   { name: "Grape Juice",         category: "Soda/Juice", emoji: "🍇", hint: "Pressed purple grapes" },
   { name: "Pineapple Juice",     category: "Soda/Juice", emoji: "🍍", hint: "Tropical pressed pineapple" },
   { name: "Cranberry Juice",     category: "Soda/Juice", emoji: "🫐", hint: "Tart red berry juice" },
-  { name: "Sparkling Water",     category: "Soda/Juice", emoji: "💧", hint: "Carbonated H₂O" },
   { name: "Sports Drink",        category: "Soda/Juice", emoji: "⚡", hint: "Electrolyte-packed drink" },
   { name: "Energy Drink",        category: "Soda/Juice", emoji: "⚡", hint: "Caffeine & sugar boost" },
 
@@ -243,31 +242,6 @@ export const DRINKS = [
   { name: "ZOA Energy",          category: "Soda/Juice", emoji: "⚡", hint: "Dwayne Johnson's energy drink" },
   { name: "Ryse Fuel",           category: "Soda/Juice", emoji: "💪", hint: "Gym culture energy brand" },
   { name: "Venom Energy",        category: "Soda/Juice", emoji: "🐍", hint: "Venom-branded energy drink" },
-
-  // ── Water ─────────────────────────────────────────────────
-  { name: "Dasani",              category: "Soda/Juice", emoji: "💧", hint: "Coca-Cola's purified water" },
-  { name: "Aquafina",            category: "Soda/Juice", emoji: "💧", hint: "PepsiCo's purified water" },
-  { name: "Fiji Water",          category: "Soda/Juice", emoji: "🌴", hint: "Artesian water from Fiji" },
-  { name: "Evian",               category: "Soda/Juice", emoji: "🏔️", hint: "Alpine spring water, France" },
-  { name: "Voss Water",          category: "Soda/Juice", emoji: "💧", hint: "Premium Norwegian water" },
-  { name: "Smartwater",          category: "Soda/Juice", emoji: "💧", hint: "Vapour-distilled Glacéau water" },
-  { name: "Core Hydration",      category: "Soda/Juice", emoji: "💧", hint: "pH balanced purified water" },
-  { name: "Essentia",            category: "Soda/Juice", emoji: "💧", hint: "Overachieving alkaline water" },
-  { name: "LIFEWTR",             category: "Soda/Juice", emoji: "💧", hint: "PepsiCo's premium water" },
-  { name: "Topo Chico",          category: "Soda/Juice", emoji: "🫧", hint: "Mexican sparkling mineral water" },
-  { name: "Perrier",             category: "Soda/Juice", emoji: "🫧", hint: "French sparkling mineral water" },
-  { name: "San Pellegrino",      category: "Soda/Juice", emoji: "🫧", hint: "Italian sparkling water" },
-  { name: "LaCroix",             category: "Soda/Juice", emoji: "🫧", hint: "Popular sparkling water brand" },
-  { name: "Bubly",               category: "Soda/Juice", emoji: "🫧", hint: "PepsiCo's sparkling water" },
-  { name: "Spindrift",           category: "Soda/Juice", emoji: "🍋", hint: "Sparkling water with real juice" },
-  { name: "Waterloo Sparkling",  category: "Soda/Juice", emoji: "🫧", hint: "Austin-born sparkling water" },
-  { name: "Hint Water",          category: "Soda/Juice", emoji: "💧", hint: "Fruit-infused still water" },
-  { name: "Liquid Death",        category: "Soda/Juice", emoji: "💀", hint: "Canned mountain water brand" },
-  { name: "Liquid Death Sparkling",category:"Soda/Juice",emoji: "💀", hint: "Canned sparkling water" },
-  { name: "AHA Sparkling Water", category: "Soda/Juice", emoji: "🫧", hint: "Coca-Cola sparkling water" },
-  { name: "Poland Spring",       category: "Soda/Juice", emoji: "🌲", hint: "Northeast US spring water" },
-  { name: "Icelandic Glacial",   category: "Soda/Juice", emoji: "❄️", hint: "Icelandic spring water" },
-  { name: "Acqua Panna",         category: "Soda/Juice", emoji: "💧", hint: "Tuscan still spring water" },
 
   // ── Juice ─────────────────────────────────────────────────
   { name: "Tropicana OJ",        category: "Soda/Juice", emoji: "🍊", hint: "America's top orange juice" },

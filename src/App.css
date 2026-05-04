@@ -620,6 +620,19 @@ body {
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.35));
 }
 
+/* Open Food Facts product image (drink mode) */
+.drink-card__product-img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;       /* show the full label — no cropping */
+  display: block;
+  margin: 0 auto 10px;
+  /* subtle lift so the label pops off the dark card */
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.45));
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
 /* Champion portrait (LoL mode) — zooms into the circular icon inside the image canvas.
    The source PNGs are ~1024×1024 with the actual champion circle ~25% of the canvas,
    so background-size needs to be ~400% to fill the container with the champion. */

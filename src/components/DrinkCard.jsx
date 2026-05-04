@@ -1,30 +1,66 @@
 // ============================================================
-// DrinkCard.jsx
-// The drink card the player drags into a category bucket.
+// DrinkCard.jsx — Draggable drink/champion card
 //
-// Props:
-//   drink        — the drink object { name, category, emoji, hint }
-//   isDragging   — true while the player is dragging the card
-//   dragDelta    — { x, y } offset in px from the card's resting position
-//   paused       — true during answer feedback; disables dragging
-//   onPointerDown / onPointerMove / onPointerUp  — drag handlers from GameScreen
-//   ref          — forwarded so GameScreen can call setPointerCapture on the element
+// Visual priority:
+//   1. Open Food Facts product photo  (fetched at runtime, cached)
+//   2. LoL champion portrait          (local file, background-image zoom)
+//   3. Emoji                          (always the instant fallback)
 // ============================================================
 
-import { forwardRef } from 'react'
+import { forwardRef, useState, useEffect } from 'react'
+import { getDrinkImage } from '../lib/drinkImages'
 
+// ── DrinkCard ─────────────────────────────────────────────────────────────────
 const DrinkCard = forwardRef(function DrinkCard(
   { drink, isDragging, dragDelta, paused, onPointerDown, onPointerMove, onPointerUp },
   ref
 ) {
-  // Visually move the card by the drag delta using CSS transform.
-  // When isDragging becomes false the delta resets to {0,0} and
-  // the CSS transition animates a smooth snap-back.
-  // While dragging: shrink to ~45% so the card doesn't cover the buckets,
-  // and shift it upward so it floats above the pointer rather than over the drop zones.
+  // ── Product image state ───────────────────────────────────────────────────
+  // Starts as null (shows emoji) then fills in when the OFF fetch resolves.
+  // The module-level cache in drinkImages.js ensures the same drink only
+  // ever triggers one network request per page load.
+  const [productImg, setProductImg] = useState(null)
+  const [imgError,   setImgError]   = useState(false)
+
+  useEffect(() => {
+    setProductImg(null)
+    setImgError(false)
+    // getDrinkImage returns a cleanup fn — pass it straight to useEffect
+    return getDrinkImage(drink, setProductImg)
+  }, [drink.name])   // re-run when the card changes to a different drink
+
+  // ── Drag transform ────────────────────────────────────────────────────────
   const transform = isDragging
     ? `translate(${dragDelta.x}px, calc(${dragDelta.y}px - 60px)) scale(0.45)`
     : 'translate(0px, 0px) scale(1)'
+
+  // ── Decide which visual to render ─────────────────────────────────────────
+  let visual
+  if (productImg && !imgError) {
+    // OFF product image — object-fit: contain so the label fits cleanly
+    visual = (
+      <img
+        className="drink-card__product-img"
+        src={productImg}
+        alt={drink.name}
+        draggable={false}
+        onError={() => setImgError(true)}
+      />
+    )
+  } else if (drink.image) {
+    // LoL champion portrait (local file).  Uses background-image + 400% zoom
+    // because the source PNGs have a large transparent canvas around the icon.
+    visual = (
+      <div
+        className="drink-card__portrait"
+        role="img"
+        aria-label={drink.name}
+        style={{ backgroundImage: `url(${drink.image})` }}
+      />
+    )
+  } else {
+    visual = <div className="drink-card__emoji">{drink.emoji}</div>
+  }
 
   return (
     <div
@@ -32,37 +68,20 @@ const DrinkCard = forwardRef(function DrinkCard(
       className={`drink-card ${isDragging ? 'drink-card--dragging' : ''} ${paused ? 'drink-card--paused' : ''}`}
       style={{
         transform,
-        // Disable browser's native touch scroll/zoom while dragging
         touchAction: 'none',
-        // Prevent text selection being triggered during drag
-        userSelect: 'none',
+        userSelect:  'none',
         cursor: paused ? 'default' : isDragging ? 'grabbing' : 'grab',
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      // Cancel drag if pointer leaves the captured area cleanly
       onPointerCancel={onPointerUp}
     >
-      {/* Champion portrait OR emoji */}
-      {drink.image ? (
-        <div
-          className="drink-card__portrait"
-          role="img"
-          aria-label={drink.name}
-          style={{ backgroundImage: `url(${drink.image})` }}
-        />
-      ) : (
-        <div className="drink-card__emoji">{drink.emoji}</div>
-      )}
+      {visual}
 
-      {/* Name */}
       <div className="drink-card__name">{drink.name}</div>
-
-      {/* Subtle hint text */}
       <div className="drink-card__hint">{drink.hint}</div>
 
-      {/* Drag instruction (hidden while actively dragging) */}
       {!isDragging && !paused && (
         <div className="drink-card__cta">🖐 Drag to a bucket below</div>
       )}

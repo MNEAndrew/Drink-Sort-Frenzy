@@ -1,6 +1,6 @@
-# Drink Sort Frenzy 🍹
+# Sort Frenzy
 
-A fast-paced drink-sorting party game available as:
+A fast-paced **sorting** mini-game collection — pick a mode, drag cards into buckets before time runs out. Available as:
 
 - **Web app** — deployed on Vercel
 - **iOS app** — built with Capacitor from the same React/Vite codebase
@@ -119,26 +119,26 @@ npx cap open ios     # (optional) open Xcode to run / archive
 ## Project structure
 
 ```
-drink-sort-frenzy/
+sort-frenzy/
 ├── capacitor.config.ts   ← Capacitor configuration
 ├── index.html            ← viewport-fit=cover for iPhone notch
 ├── vite.config.js        ← Vite build config
 ├── src/
-│   ├── App.jsx           ← Root component, mode registry
+│   ├── App.jsx           ← Root component + screen routing
+│   ├── modes.js          ← All game modes (live + roadmap)
 │   ├── App.css           ← Global styles + safe-area vars
 │   ├── components/
 │   │   ├── GameScreen.jsx     ← Gameplay + haptic feedback
-│   │   ├── StartScreen.jsx    ← Start screen + alcohol warning
+│   │   ├── StartScreen.jsx    ← Start screen + alcohol warning (drinks)
 │   │   └── ...
 │   ├── data/
-│   │   ├── drinks.js     ← Drink card dataset
-│   │   └── lol.js        ← LoL champion dataset
+│   │   ├── drinks.js     ← Beverages mode card dataset
+│   │   └── lol.js        ← Runeterra regions mode dataset
 │   └── lib/
 │       ├── platform.js   ← isNative() / getPlatform()
 │       ├── haptics.js    ← Capacitor Haptics (no-op in browser)
 │       ├── leaderboard.js← Supabase queries (mode + platform fields)
-│       ├── supabase.js   ← Supabase client init
-│       └── drinkImages.js← Open Food Facts runtime image fetcher
+│       └── supabase.js   ← Supabase client init
 └── ios/                  ← Generated Xcode project (do not edit manually)
 ```
 

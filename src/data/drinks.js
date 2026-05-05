@@ -1,5 +1,5 @@
 // ============================================================
-// drinks.js — Full drink dataset for Drink Sort Frenzy
+// drinks.js — Full drink dataset for Sort Frenzy (Beverages mode)
 //
 // Categories (must match exactly):
 //   "Cocktail" | "Mocktail" | "Coffee/Tea" | "Soda/Juice" | "Beer/Wine" | "Liquor"

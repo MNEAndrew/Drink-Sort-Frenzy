@@ -11,7 +11,7 @@ import { getTopScores } from '../lib/leaderboard'
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
-function Leaderboard({ onBack, highlightId, modeId = 'drinks', modeName = 'Drink Sort Frenzy' }) {
+function Leaderboard({ onBack, highlightId, modeId = 'drinks', modeName = 'Sort Frenzy' }) {
   const [scores,    setScores]    = useState([])
   const [loading,   setLoading]   = useState(true)
   const [error,     setError]     = useState(null)

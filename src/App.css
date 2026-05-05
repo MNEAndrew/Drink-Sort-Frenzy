@@ -1,5 +1,5 @@
 /* ============================================================
-   App.css — Global styles for Drink Sort Frenzy
+   App.css — Global styles for Sort Frenzy
    Organised into:
      1. CSS variables & reset
      2. Layout wrappers
@@ -984,10 +984,16 @@ body {
 }
 
 .mode-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
   width: 100%;
+}
+
+@media (min-width: 560px) {
+  .mode-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .mode-card {
@@ -1004,6 +1010,19 @@ body {
   color: var(--text-primary);
   font-family: inherit;
   width: 100%;
+  min-width: 0;
+}
+
+.mode-card:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.mode-card:disabled:hover,
+.mode-card:disabled:focus-visible {
+  transform: none;
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 .mode-card:hover,
@@ -1028,6 +1047,22 @@ body {
   font-size: 1.2rem;
   font-weight: 800;
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mode-card__badge {
+  font-size: 0.55rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
 }
 
 .mode-card__desc {
@@ -1050,6 +1085,16 @@ body {
   border: 1px solid;
   font-weight: 600;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mode-card__cat-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .mode-card__cat-more {

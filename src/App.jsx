@@ -1,6 +1,7 @@
 // ============================================================
 // App.jsx — Root component
 // Screens: 'modes' | 'start' | 'game' | 'gameover' | 'leaderboard'
+// Mode list lives in src/modes.js
 // ============================================================
 
 import { useState } from 'react'
@@ -10,39 +11,9 @@ import GameScreen       from './components/GameScreen'
 import GameOverScreen   from './components/GameOverScreen'
 import Leaderboard      from './components/Leaderboard'
 
-import { CATEGORIES as DRINK_CATS, DRINKS }     from './data/drinks'
-import { CATEGORIES as LOL_CATS,   ITEMS as LOL_ITEMS } from './data/lol'
+import { MODES } from './modes'
 
 import './App.css'
-
-// ── Game modes registry ───────────────────────────────────────
-const MODES = [
-  {
-    id:          'drinks',
-    name:        'Drink Sort Frenzy',
-    emoji:       '🍹',
-    tagline:     'Sort drinks before time runs out!',
-    description: 'Sort cocktails, coffees, beers, liquors & more into the right category!',
-    noun:        'category',
-    categories:  DRINK_CATS,
-    items:       DRINKS,
-    hasLeaderboard: true,
-    hasAlcohol:  true,
-    disclaimer:  'Brand names belong to their respective owners. Fan-made project — not affiliated with any beverage company.',
-  },
-  {
-    id:          'lol',
-    name:        'LoL Region Sort',
-    emoji:       '⚔️',
-    tagline:     'Sort champions by their home region!',
-    description: 'Do you know your LoL lore? Sort 140+ champions into their correct Runeterra region!',
-    noun:        'region',
-    categories:  LOL_CATS,
-    items:       LOL_ITEMS,
-    hasLeaderboard: true,
-    disclaimer:  'All champion names belong to Riot Games. Fan-made project — not affiliated with Riot Games.',
-  },
-]
 
 function App() {
   const [screen,      setScreen]      = useState('modes')
@@ -55,6 +26,7 @@ function App() {
 
   // ── Select a mode → go to start screen ───────────────────
   function handleSelectMode(mode) {
+    if (mode.comingSoon) return
     const saved = parseInt(localStorage.getItem(`${mode.id}_highScore`) || '0', 10)
     setHighScore(saved)
     setActiveMode(mode)

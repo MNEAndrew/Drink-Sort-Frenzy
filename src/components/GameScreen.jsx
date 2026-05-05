@@ -431,7 +431,7 @@ function GameScreen({ onGameOver, categories, items }) {
           {isDragging ? '🎯 Drop it in the right bucket!' : '👆 Drag the card to a category'}
         </p>
         <div
-          className="buckets-row"
+          className={`buckets-row${categories.length >= 10 ? ' buckets-row--two-col' : ''}`}
           style={{ '--bucket-count': bucketCount }}
         >
           {categories.map(cat => (

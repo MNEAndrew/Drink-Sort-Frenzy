@@ -222,9 +222,29 @@ body {
 
 .legend-grid {
   display: grid;
-  /* auto-fill so 5 drink cats use full width and 14 LoL regions wrap into ~3 rows */
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  /* auto-fill so 5–6 drink cats use full width; LoL regions use --legend-cols */
+  grid-template-columns: repeat(var(--legend-cols, auto-fill), minmax(60px, 1fr));
   gap: 8px;
+}
+
+.legend-grid--two-col {
+  --legend-cols: 2;
+}
+
+.legend-grid--two-col .legend-item {
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.legend-grid--two-col .legend-label {
+  text-align: left;
+  font-size: 0.68rem;
+}
+
+.legend-grid--two-col .legend-icon {
+  flex-shrink: 0;
 }
 
 .legend-item {
@@ -455,10 +475,44 @@ body {
 .buckets-row {
   display: grid;
   /* auto-fill: fills the row with columns at least 52px wide,
-     expanding evenly. Works for 5 drinks cats AND 14 LoL regions. */
+     expanding evenly. Works for 5–6 drink categories. */
   grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
   gap: 6px;
   align-items: end;
+}
+
+/* 14-region LoL mode: 2 columns × 7 rows */
+.buckets-row--two-col {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+/* Horizontal icon + label layout keeps each row compact */
+.buckets-row--two-col .bucket__body {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 7px;
+}
+
+.buckets-row--two-col .bucket__label {
+  text-align: left;
+  font-size: 0.62rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buckets-row--two-col .bucket__region-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.buckets-row--two-col .bucket__emoji {
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
 /* Individual bucket */

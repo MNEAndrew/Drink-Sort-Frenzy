@@ -14,20 +14,20 @@
 // ============================================================
 
 export const CATEGORIES = [
-  { id: "Demacia",          label: "Demacia",      emoji: "⚜️",  color: "#f0c040" },
-  { id: "Noxus",            label: "Noxus",        emoji: "🔱",  color: "#e74c3c" },
-  { id: "Ionia",            label: "Ionia",        emoji: "🌸",  color: "#ff69b4" },
-  { id: "Freljord",         label: "Freljord",     emoji: "❄️",  color: "#74b9ff" },
-  { id: "Bilgewater",       label: "Bilgewater",   emoji: "⚓",  color: "#0984e3" },
-  { id: "Piltover",         label: "Piltover",     emoji: "⚙️",  color: "#fdcb6e" },
-  { id: "Zaun",             label: "Zaun",         emoji: "🧪",  color: "#00b894" },
-  { id: "Shurima",          label: "Shurima",      emoji: "🌅",  color: "#e17055" },
-  { id: "Targon",           label: "Targon",       emoji: "✨",  color: "#a29bfe" },
-  { id: "Shadow Isles",     label: "Shadow Isles", emoji: "💀",  color: "#55efc4" },
-  { id: "Ixtal",            label: "Ixtal",        emoji: "🌿",  color: "#6ab04c" },
-  { id: "The Void",         label: "The Void",     emoji: "🌀",  color: "#9b59b6" },
-  { id: "Bandle City",      label: "Bandle City",  emoji: "🎪",  color: "#ffeaa7" },
-  { id: "Runeterra / Other",label: "Runeterra",    emoji: "🌍",  color: "#b2bec3" },
+  { id: "Demacia",          label: "Demacia",      emoji: "⚜️",  color: "#f0c040", image: "/regions/Demacia_Crest.png" },
+  { id: "Noxus",            label: "Noxus",        emoji: "🔱",  color: "#e74c3c", image: "/regions/Noxus_Crest.png" },
+  { id: "Ionia",            label: "Ionia",        emoji: "🌸",  color: "#ff69b4", image: "/regions/Ionia_Crest.png" },
+  { id: "Freljord",         label: "Freljord",     emoji: "❄️",  color: "#74b9ff", image: "/regions/Freljord_crest.png" },
+  { id: "Bilgewater",       label: "Bilgewater",   emoji: "⚓",  color: "#0984e3", image: "/regions/Bilgewater_Crest.png" },
+  { id: "Piltover",         label: "Piltover",     emoji: "⚙️",  color: "#fdcb6e", image: "/regions/Piltover_Crest.png" },
+  { id: "Zaun",             label: "Zaun",         emoji: "🧪",  color: "#00b894", image: null },
+  { id: "Shurima",          label: "Shurima",      emoji: "🌅",  color: "#e17055", image: "/regions/Shuriman_Crest.png" },
+  { id: "Targon",           label: "Targon",       emoji: "✨",  color: "#a29bfe", image: "/regions/Mount_Targon_Crest.png" },
+  { id: "Shadow Isles",     label: "Shadow Isles", emoji: "💀",  color: "#55efc4", image: "/regions/Shadow_Isles_Crest.png" },
+  { id: "Ixtal",            label: "Ixtal",        emoji: "🌿",  color: "#6ab04c", image: "/regions/Ixtal_Crest.png" },
+  { id: "The Void",         label: "The Void",     emoji: "🌀",  color: "#9b59b6", image: null },
+  { id: "Bandle City",      label: "Bandle City",  emoji: "🎪",  color: "#ffeaa7", image: "/regions/Bandle_City_Crest.png" },
+  { id: "Runeterra / Other",label: "Runeterra",    emoji: "🌍",  color: "#b2bec3", image: "/regions/Runeterra_Crest.png" },
 ]
 
 export const ITEMS = [

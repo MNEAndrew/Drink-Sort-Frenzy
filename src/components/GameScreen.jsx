@@ -443,7 +443,10 @@ function GameScreen({ onGameOver, categories, items }) {
             >
               <div className="bucket__rim" />
               <div className="bucket__body">
-                <span className="bucket__emoji">{cat.emoji}</span>
+                {cat.image
+                  ? <img className="bucket__region-icon" src={cat.image} alt={cat.label} draggable={false} />
+                  : <span className="bucket__emoji">{cat.emoji}</span>
+                }
                 <span className="bucket__label">{cat.label}</span>
               </div>
             </div>

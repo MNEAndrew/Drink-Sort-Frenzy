@@ -66,7 +66,10 @@ function StartScreen({ mode, highScore, onStart, onLeaderboard, onChangeMode }) 
         <div className="legend-grid" style={{ '--bucket-count': categories.length }}>
           {categories.map(cat => (
             <div key={cat.id} className="legend-item" style={{ borderColor: cat.color }}>
-              <span className="legend-emoji">{cat.emoji}</span>
+              {cat.image
+                ? <img className="legend-icon" src={cat.image} alt={cat.label} draggable={false} />
+                : <span className="legend-emoji">{cat.emoji}</span>
+              }
               <span className="legend-label">{cat.label}</span>
             </div>
           ))}

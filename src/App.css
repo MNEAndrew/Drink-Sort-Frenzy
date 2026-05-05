@@ -244,6 +244,13 @@ body {
   font-size: 1.4rem;
 }
 
+.legend-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
+
 .legend-label {
   color: var(--text-muted);
   font-size: 0.65rem;
@@ -494,6 +501,16 @@ body {
   transition: transform 0.2s;
 }
 
+/* Region crest icon (LoL mode) — replaces the emoji inside a bucket */
+.bucket__region-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  transition: transform 0.2s;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6));
+  flex-shrink: 0;
+}
+
 .bucket__label {
   font-size: 0.58rem;
   font-weight: 700;
@@ -527,7 +544,8 @@ body {
     0 8px 28px color-mix(in srgb, var(--cat-color) 55%, transparent);
 }
 
-.bucket--hovered .bucket__emoji {
+.bucket--hovered .bucket__emoji,
+.bucket--hovered .bucket__region-icon {
   transform: scale(1.3);
 }
 

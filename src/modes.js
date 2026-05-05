@@ -37,6 +37,7 @@ export const MODES = [
     id: 'lol',
     name: 'Runeterra regions',
     emoji: '⚔️',
+    iconSrc: '/icons/lol-symbol.png',
     tagline: 'Sort champions by home region!',
     description: 'LoL lore sprint: place 140+ champions into the right region.',
     noun: 'region',

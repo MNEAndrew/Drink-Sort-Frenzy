@@ -24,7 +24,18 @@ function ModeSelectScreen({ modes, onSelect }) {
             className={`mode-card${mode.comingSoon ? ' mode-card--soon' : ''}`}
             onClick={() => onSelect(mode)}
           >
-            <div className="mode-card__emoji">{mode.emoji}</div>
+            <div className="mode-card__emoji">
+              {mode.iconSrc ? (
+                <img
+                  className="mode-card__mode-icon"
+                  src={mode.iconSrc}
+                  alt=""
+                  draggable={false}
+                />
+              ) : (
+                mode.emoji
+              )}
+            </div>
             <div className="mode-card__body">
               <h2 className="mode-card__name">
                 {mode.name}
